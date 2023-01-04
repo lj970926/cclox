@@ -15,6 +15,8 @@ class Interpreter {
   Interpreter& operator=(const Interpreter&) = delete;
  private:
   bool had_error_ = false;
+  void Run(const std::string& source);
+
 };
 } //namespace cclox
 
