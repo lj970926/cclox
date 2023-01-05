@@ -5,3 +5,5 @@ set(CMAKE_CXX_STANDARD 20)
 file(GLOB_RECURSE LOX_SOURCES src/*.cpp)
 include_directories(include)
 add_executable(${PROJECT_NAME} ${LOX_SOURCES})
+
+add_subdirectory(test)
