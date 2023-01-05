@@ -27,8 +27,10 @@ class Scanner {
   void AddToken(TokenType type);
   void AddToken(TokenType type, const OptionalLiteral &literal);
   bool Match(char expected);
-  char Peak();
+  char Peak() const;
+  char PeekNext() const;
   void AddString();
+  void AddNumber();
 };
 }
 

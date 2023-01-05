@@ -5,6 +5,11 @@
 #include "scanner.h"
 
 namespace cclox {
+namespace {
+bool IsDigit(char c) {
+  return c >= '0' && c <= '9';
+}
+}
 Scanner::Scanner(const std::string source): source_(source) {}
 std::list<Token> Scanner::ScanTokens() {
   while (!End()) {
@@ -43,10 +48,15 @@ bool Scanner::Match(char expected) {
   return false;
 }
 
-char Scanner::Peak() {
+char Scanner::Peak() const {
   if (End())
     return '\0';
   return source_[current_];
+}
+
+char Scanner::PeekNext() const {
+  if (current_ + 1 >= source_.length()) return '\0';
+  return source_[current_ + 1];
 }
 
 void Scanner::ScanToken() {
@@ -111,6 +121,12 @@ void Scanner::ScanToken() {
     case '"':
       AddString();
       break ;
+    default:
+      if (IsDigit(c)) {
+        AddNumber();
+      }else {
+        //TODO: Report error
+      }
   }
 }
 
@@ -129,4 +145,17 @@ void Scanner::AddString() {
   OptionalLiteral val = source_.substr(start_ + 1, current_ - start_ - 2);
   AddToken(TokenType::STRING, val);
 }
+
+void Scanner::AddNumber() {
+  while (IsDigit(Peak())) NextChar();
+
+  if (Peak() == '.' && IsDigit(PeekNext())) {
+    NextChar();
+    while (IsDigit(Peak())) NextChar();
+  }
+
+  OptionalLiteral val = std::stod(source_.substr(start_, current_ - start_));
+  AddToken(TokenType::NUMBER, val);
+}
+
 } //namespace
