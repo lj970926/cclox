@@ -31,6 +31,7 @@ class Scanner {
   char PeekNext() const;
   void AddString();
   void AddNumber();
+  void AddIdentifier();
 };
 }
 

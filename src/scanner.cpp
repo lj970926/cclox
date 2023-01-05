@@ -4,11 +4,43 @@
 
 #include "scanner.h"
 
+#include <unordered_map>
+
 namespace cclox {
 namespace {
 bool IsDigit(char c) {
   return c >= '0' && c <= '9';
 }
+
+bool IsAlpha(char c) {
+  return c >= 'a' && c <= 'z' ||
+    c >= 'A' && c <= 'Z' ||
+    c == '_';
+}
+
+bool IsAlphaNumeric(char c) {
+  return IsDigit(c) || IsAlpha(c);
+}
+
+std::unordered_map<std::string, TokenType> keywords {
+    {"and", TokenType::AND},
+    {"class", TokenType::CLASS},
+    {"else", TokenType::ELSE},
+    {"false", TokenType::FALSE},
+    {"for", TokenType::FOR},
+    {"fun", TokenType::FUN},
+    {"if", TokenType::IF},
+    {"nil", TokenType::NIL},
+    {"or", TokenType::OR},
+    {"print", TokenType::PRINT},
+    {"return", TokenType::RETURN},
+    {"super", TokenType::SUPER},
+    {"this", TokenType::THIS},
+    {"true", TokenType::TRUE},
+    {"var", TokenType::VAR},
+    {"while", TokenType::WHILE}
+};
+
 }
 Scanner::Scanner(const std::string source): source_(source) {}
 std::list<Token> Scanner::ScanTokens() {
@@ -124,7 +156,9 @@ void Scanner::ScanToken() {
     default:
       if (IsDigit(c)) {
         AddNumber();
-      }else {
+      } else if (IsAlpha(c)) {
+        AddIdentifier();
+      } else {
         //TODO: Report error
       }
   }
@@ -156,6 +190,14 @@ void Scanner::AddNumber() {
 
   OptionalLiteral val = std::stod(source_.substr(start_, current_ - start_));
   AddToken(TokenType::NUMBER, val);
+}
+
+void Scanner::AddIdentifier() {
+  while (IsAlphaNumeric(Peak())) NextChar();
+  std::string text = source_.substr(start_, current_ - start_);
+  auto itr = keywords.find(text);
+  TokenType type = itr == keywords.end() ? TokenType::IDENTIFIER : itr->second;
+  AddToken(type);
 }
 
 } //namespace
