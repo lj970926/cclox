@@ -7,6 +7,9 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <string>
+
+#include "scanner.h"
 
 namespace cclox {
 void Interpreter::RunFile(const std::string &path) {
@@ -27,6 +30,10 @@ void Interpreter::RunPrompt() {
 }
 
 void Interpreter::Run(const std::string &source) {
-
+  Scanner scanner(source);
+  auto tokens = scanner.ScanTokens();
+  for (const auto& token: tokens) {
+    std::cout << static_cast<std::string>(token) << std::endl;
+  }
 }
 } //namespace cclox
