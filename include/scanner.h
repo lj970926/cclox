@@ -26,6 +26,9 @@ class Scanner {
   void ScanToken();
   void AddToken(TokenType type);
   void AddToken(TokenType type, const OptionalLiteral &literal);
+  bool Match(char expected);
+  char Peak();
+  void AddString();
 };
 }
 
