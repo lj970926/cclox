@@ -59,9 +59,12 @@ namespace {
 } //namespace
 Token::operator std::string() const {
   const std::string& token_name = token_str.find(type_)->second;
-  auto res = token_name + " " + lexeme + " ";
+  auto res = token_name + " " + lexeme_ + " ";
   if (literal_)
     res += GetLiteralStr(literal_);
   return res;
 }
-}
+
+Token::Token(TokenType type, const std::string& lexme, const OptionalLiteral& literal, size_t line)
+: type_(type), lexeme_(lexme), literal_(literal), line_(line){}
+} //namespace cclox

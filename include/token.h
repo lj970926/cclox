@@ -57,11 +57,12 @@ using OptionalLiteral = std::optional<Literal>;
 
 class Token {
  public:
+  Token(TokenType type, const std::string& lexme, const OptionalLiteral& literal, size_t line);
   operator std::string() const;
  private:
   TokenType type_;
-  int line_;
-  std::string lexeme;
+  size_t line_;
+  std::string lexeme_;
   OptionalLiteral literal_;
 };
 
