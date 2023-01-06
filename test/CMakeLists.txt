@@ -1,8 +1,8 @@
 enable_testing()
 
-add_executable(interpreter_test interpreter_test.cpp)
+add_executable(scanner_test scanner_test.cpp ../src/token.cpp ../src/scanner.cpp ../src/reporter.cpp)
 
-target_link_libraries(interpreter_test gtest)
+target_link_libraries(scanner_test gtest_main)
 
 include(GoogleTest)
-gtest_discover_tests(interpreter_test)
+gtest_discover_tests(scanner_test)

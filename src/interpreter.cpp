@@ -27,6 +27,7 @@ void Interpreter::RunPrompt() {
     Run(line);
     had_error_ = false;
   }
+  std::cout << "Bye!\n";
 }
 
 void Interpreter::Run(const std::string &source) {

@@ -67,4 +67,9 @@ Token::operator std::string() const {
 
 Token::Token(TokenType type, const std::string& lexme, const OptionalLiteral& literal, size_t line)
 : type_(type), lexeme_(lexme), literal_(literal), line_(line){}
+
+TokenType Token::type() const {
+  return type_;
+}
+
 } //namespace cclox

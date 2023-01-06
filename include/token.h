@@ -59,6 +59,7 @@ class Token {
  public:
   Token(TokenType type, const std::string& lexme, const OptionalLiteral& literal, size_t line);
   operator std::string() const;
+  TokenType type() const;
  private:
   TokenType type_;
   size_t line_;
