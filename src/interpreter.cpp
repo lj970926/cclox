@@ -32,6 +32,12 @@ void Interpreter::RunPrompt() {
 void Interpreter::Run(const std::string &source) {
   Scanner scanner(source, reporter_);
   auto tokens = scanner.ScanTokens();
+
+  if (reporter_.status() != LoxStatus::OK) {
+    reporter_.Print();
+    had_error_ = true;
+  }
+
   for (const auto& token: tokens) {
     std::cout << static_cast<std::string>(token) << std::endl;
   }

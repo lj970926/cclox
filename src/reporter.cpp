@@ -7,7 +7,7 @@
 #include <iostream>
 
 namespace cclox {
-void ErrorReporter::set_error(int line, const std::string &message) {
+void ErrorReporter::set_error(size_t line, const std::string &message) {
   error_msgs_.emplace_back("[line " + std::to_string(line) + "] Error: " + message);
   status_ = LoxStatus::ERROR;
 }

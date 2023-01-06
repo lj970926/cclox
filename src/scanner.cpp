@@ -152,7 +152,9 @@ void Scanner::ScanToken() {
       } else if (IsAlpha(c)) {
         AddIdentifier();
       } else {
-        //TODO: Report error
+        std::string message = "Unexpected character: ";
+        message.push_back(c);
+        reporter_.set_error(line_, message);
       }
   }
 }
@@ -164,7 +166,7 @@ void Scanner::AddString() {
   }
 
   if (End()) {
-    //TODO: Report Error
+    reporter_.set_error(line_, "Unterminated string!");
     return ;
   }
 

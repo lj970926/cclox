@@ -16,7 +16,7 @@ enum class LoxStatus {
 
 class ErrorReporter {
  public:
-  void set_error(int line, const std::string& message);
+  void set_error(size_t line, const std::string& message);
   LoxStatus status() const;
   void Print() const;
   void clear();
