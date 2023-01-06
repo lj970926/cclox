@@ -1,6 +1,8 @@
 enable_testing()
 
-add_executable(scanner_test scanner_test.cpp ../src/token.cpp ../src/scanner.cpp ../src/reporter.cpp)
+file(GLOB_RECURSE LOX_SOURCES ../src/*.cpp)
+
+add_executable(scanner_test scanner_test.cpp ${LOX_SOURCES})
 
 target_link_libraries(scanner_test gtest_main)
 

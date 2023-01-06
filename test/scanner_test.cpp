@@ -14,7 +14,7 @@
 namespace cclox {
 TEST(ScannerTest, ValidTokens) {
   std::string source
-      = "( ) { } , . - + ; / * ! != = == > >= < <= arg1 \"string\" 1 and class "
+      = "( ) { } , . - + ; / * ! != = == > >= < <= arg1 \"string\" 1.33 1 and class "
         "else false fun "
         "for if nil or print return super this true var while";
   ErrorReporter reporter;
@@ -42,6 +42,7 @@ TEST(ScannerTest, ValidTokens) {
       TokenType::IDENTIFIER,
       TokenType::STRING,
       TokenType::NUMBER,
+      TokenType::NUMBER,
       TokenType::AND,
       TokenType::CLASS,
       TokenType::ELSE,
@@ -67,6 +68,35 @@ TEST(ScannerTest, ValidTokens) {
   for (int i = 0; i < tokens.size(); ++i) {
     EXPECT_EQ(tokens_vec[i].type(), expected[i]);
   }
+}
+
+TEST(ScannerTest, UnterminatedStr) {
+  std::string source = "\"";
+  ErrorReporter reporter;
+  Scanner scanner(source, reporter);
+  scanner.ScanTokens();
+
+  EXPECT_EQ(reporter.status(), LoxStatus::ERROR);
+}
+
+TEST(ScannerTest, Comment) {
+  std::string source = "// foo(a | b)";
+  ErrorReporter reporter;
+  Scanner scanner(source, reporter);
+
+  std::list<Token> tokens = scanner.ScanTokens();
+  EXPECT_EQ(tokens.size(), 1);
+  EXPECT_EQ(tokens.front().type(), TokenType::LOX_EOF);
+}
+
+TEST(ScannerTest, UnexpectedChar) {
+  std::string source = "| id";
+  ErrorReporter reporter;
+  Scanner scanner(source, reporter);
+
+  auto tokens = scanner.ScanTokens();
+  EXPECT_EQ(reporter.status(), LoxStatus::ERROR);
+  EXPECT_EQ(tokens.size(), 2);
 }
 
 }
