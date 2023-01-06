@@ -42,16 +42,9 @@ std::unordered_map<std::string, TokenType> keywords {
 };
 
 }
-Scanner::Scanner(const std::string source): source_(source) {}
-std::list<Token> Scanner::ScanTokens() {
-  while (!End()) {
-    start_ = current_;
-    ScanToken();
-  }
 
-  tokens_.emplace_back(TokenType::LOX_EOF, "", std::nullopt, line_);
-  return tokens_;
-}
+Scanner::Scanner(const std::string &source, ErrorReporter &reporter)
+  : source_(source), reporter_(reporter) {}
 
 bool Scanner::End() const {
   return current_ >= source_.length();
@@ -198,6 +191,16 @@ void Scanner::AddIdentifier() {
   auto itr = keywords.find(text);
   TokenType type = itr == keywords.end() ? TokenType::IDENTIFIER : itr->second;
   AddToken(type);
+}
+
+std::list<Token> Scanner::ScanTokens() {
+  while (!End()) {
+    start_ = current_;
+    ScanToken();
+  }
+
+  tokens_.emplace_back(TokenType::LOX_EOF, "", std::nullopt, line_);
+  return tokens_;
 }
 
 } //namespace

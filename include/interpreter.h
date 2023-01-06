@@ -6,6 +6,8 @@
 #define CCLOX_INTERPRETER_H
 #include <string>
 
+#include "reporter.h"
+
 namespace cclox {
 class Interpreter {
  public:
@@ -13,8 +15,11 @@ class Interpreter {
   void RunPrompt();
   Interpreter(const Interpreter&) = delete;
   Interpreter& operator=(const Interpreter&) = delete;
+  Interpreter() = default;
  private:
   bool had_error_ = false;
+  ErrorReporter reporter_;
+
   void Run(const std::string& source);
 
 };

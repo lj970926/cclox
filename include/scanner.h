@@ -8,11 +8,12 @@
 #include <list>
 
 #include "token.h"
+#include "reporter.h"
 
 namespace cclox {
 class Scanner {
  public:
-  Scanner(const std::string source="");
+  Scanner(const std::string& source, ErrorReporter& reporter);
   std::list<Token> ScanTokens();
  private:
   std::string source_;
@@ -20,6 +21,7 @@ class Scanner {
   size_t current_ = 0;
   size_t line_ = 1;
   std::list<Token> tokens_;
+  ErrorReporter& reporter_;
 
   bool End() const;
   char NextChar();
