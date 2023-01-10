@@ -72,4 +72,8 @@ TokenType Token::type() const {
   return type_;
 }
 
+const std::string& Token::lexeme() const {
+  return lexeme_;
+}
+
 } //namespace cclox

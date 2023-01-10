@@ -28,7 +28,7 @@ class Visitor {
 };
 
 struct Expr: NonCopyable {
-  virtual void accept(Visitor&& visitor) const = 0;
+  virtual void accept(Visitor& visitor) const = 0;
 };
 
 using ExprPtr = std::unique_ptr<Expr>;
@@ -40,7 +40,7 @@ struct BinaryExpr: public Expr {
   BinaryExpr(ExprPtr l, Token t, ExprPtr r)
       : left(std::move(l)), token(t), right(std::move(r)) {}
 
-  void accept(Visitor&& visitor) const override {
+  void accept(Visitor& visitor) const override {
     visitor.VisitBinary(*this);
   }
 };
@@ -49,7 +49,7 @@ class GroupingExpr: public Expr {
   ExprPtr expr;
   explicit GroupingExpr(ExprPtr e): expr(std::move(e)) {}
 
-  void accept(Visitor&& visitor) const override {
+  void accept(Visitor& visitor) const override {
     visitor.VisitGrouping(*this);
   }
 };
@@ -58,7 +58,7 @@ class LiteralExpr: public Expr {
   OptionalLiteral value;
   explicit LiteralExpr(OptionalLiteral v): value(v) {}
 
-  void accept(Visitor&& visitor) const override {
+  void accept(Visitor& visitor) const override {
     visitor.VisitLiteral(*this);
   }
 };
@@ -68,7 +68,7 @@ class UnaryExpr: public Expr {
   ExprPtr right;
   UnaryExpr(Token t, ExprPtr r): token(t), right(std::move(r)) {}
 
-  void accept(Visitor&& visitor) const override {
+  void accept(Visitor& visitor) const override {
     visitor.VisitUnary(*this);
   }
 };
