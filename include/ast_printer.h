@@ -24,7 +24,7 @@ class AstPrinter: public Visitor {
 
  private:
   std::string result_;
-  void parenthesize(const std::string& name, const std::initializer_list<const Expr&> exprs);
+  void Parenthesize(const std::string& name, const std::initializer_list<const Expr*>& exprs);
 };
 
 }

@@ -68,6 +68,17 @@ class Token {
   OptionalLiteral literal_;
 };
 
+inline std::string GetLiteralStr(const OptionalLiteral& literal) {
+  if (!literal.has_value())
+    return "";
+
+  int index = literal.value().index();
+  if (index == 0)
+    return std::get<std::string>(literal.value());
+  else
+    return std::to_string(std::get<double>(literal.value()));
+}
+
 } //namespace cclox
 
 #endif  // CCLOX_TOKEN_H

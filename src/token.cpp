@@ -48,14 +48,6 @@ namespace {
     {TokenType::WHILE, "WHILE"},
     {TokenType::LOX_EOF, "EOF"}
   };
-
-  std::string GetLiteralStr(const OptionalLiteral& literal) {
-    int index = literal.value().index();
-    if (index == 0)
-      return std::get<std::string>(literal.value());
-    else
-      return std::to_string(std::get<double>(literal.value()));
-  }
 } //namespace
 Token::operator std::string() const {
   const std::string& token_name = token_str.find(type_)->second;

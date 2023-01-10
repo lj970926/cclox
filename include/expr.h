@@ -45,7 +45,7 @@ struct BinaryExpr: public Expr {
   }
 };
 
-class GroupingExpr: public Expr {
+struct GroupingExpr: public Expr {
   ExprPtr expr;
   explicit GroupingExpr(ExprPtr e): expr(std::move(e)) {}
 
@@ -54,7 +54,7 @@ class GroupingExpr: public Expr {
   }
 };
 
-class LiteralExpr: public Expr {
+struct LiteralExpr: public Expr {
   OptionalLiteral value;
   explicit LiteralExpr(OptionalLiteral v): value(v) {}
 
@@ -63,7 +63,7 @@ class LiteralExpr: public Expr {
   }
 };
 
-class UnaryExpr: public Expr {
+struct UnaryExpr: public Expr {
   Token token;
   ExprPtr right;
   UnaryExpr(Token t, ExprPtr r): token(t), right(std::move(r)) {}
