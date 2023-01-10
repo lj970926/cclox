@@ -17,18 +17,19 @@ struct GroupingExpr;
 struct LiteralExpr;
 struct UnaryExpr;
 
-template<typename T>
 class Visitor {
  public:
   Visitor() = default;
   virtual ~Visitor() = default;
-  virtual T VisitBinary(const BinaryExpr& binary) = 0;
-  virtual T VisitGrouping(const GroupingExpr& group) = 0;
-  virtual T VisitLiteral(const LiteralExpr& literal) = 0;
-  virtual T VisitUnary(const UnaryExpr& unary) = 0;
+  virtual void VisitBinary(const BinaryExpr& binary) = 0;
+  virtual void VisitGrouping(const GroupingExpr& group) = 0;
+  virtual void VisitLiteral(const LiteralExpr& literal) = 0;
+  virtual void VisitUnary(const UnaryExpr& unary) = 0;
 };
 
-struct Expr: NonCopyable {};
+struct Expr: NonCopyable {
+  virtual void accept(Visitor&& visitor) const = 0;
+};
 
 using ExprPtr = std::unique_ptr<Expr>;
 
@@ -39,9 +40,8 @@ struct BinaryExpr: public Expr {
   BinaryExpr(ExprPtr l, Token t, ExprPtr r)
       : left(std::move(l)), token(t), right(std::move(r)) {}
 
-  template <typename T>
-  T Accept(const Visitor<T>& visitor) {
-    return visitor.VisitBinary(*this);
+  void accept(Visitor&& visitor) const override {
+    visitor.VisitBinary(*this);
   }
 };
 
@@ -49,9 +49,8 @@ class GroupingExpr: public Expr {
   ExprPtr expr;
   explicit GroupingExpr(ExprPtr e): expr(std::move(e)) {}
 
-  template <typename T>
-  T Accept(const Visitor<T>& visitor) {
-    return visitor.VisitGrouping(*this);
+  void accept(Visitor&& visitor) const override {
+    visitor.VisitGrouping(*this);
   }
 };
 
@@ -59,9 +58,8 @@ class LiteralExpr: public Expr {
   OptionalLiteral value;
   explicit LiteralExpr(OptionalLiteral v): value(v) {}
 
-  template <typename T>
-  T Accept(const Visitor<T>& visitor) {
-    return visitor.VisitLiteral(*this);
+  void accept(Visitor&& visitor) const override {
+    visitor.VisitLiteral(*this);
   }
 };
 
@@ -70,9 +68,8 @@ class UnaryExpr: public Expr {
   ExprPtr right;
   UnaryExpr(Token t, ExprPtr r): token(t), right(std::move(r)) {}
 
-  template <typename T>
-  T Accept(const Visitor<T>& visitor) {
-    return visitor.VisitUnary(*this);
+  void accept(Visitor&& visitor) const override {
+    visitor.VisitUnary(*this);
   }
 };
 
