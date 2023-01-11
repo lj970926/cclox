@@ -5,17 +5,29 @@
 #ifndef CCLOX_PARSER_H
 #define CCLOX_PARSER_H
 
-#include <list>
+#include <vector>
+#include <initializer_list>
 
 #include "token.h"
+#include "expr.h"
 
 namespace cclox {
 class Parser {
  public:
-  Parser(const std::list<Token>& tokens);
+  Parser(const std::vector<Token>& tokens);
  private:
-  std::list<Token> tokens_;
+  std::vector<Token> tokens_;
+  size_t current_ = 0;
+
+  ExprPtr Expression();
+  ExprPtr Equality();
+  bool Match(const std::initializer_list<TokenType>& types);
+  bool Check(TokenType type) const;
+  Token Advance();
+  bool End() const;
+  Token Peek() const;
+  Token Previous() const;
 };
-}
+} //namespace cclox
 
 #endif  // CCLOX_PARSER_H

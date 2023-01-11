@@ -62,11 +62,10 @@ TEST(ScannerTest, ValidTokens) {
       TokenType::LOX_EOF
   };
 
-  std::list<Token> tokens = scanner.ScanTokens();
-  std::vector<Token> tokens_vec {tokens.begin(), tokens.end()};
+  std::vector<Token> tokens = scanner.ScanTokens();
   ASSERT_EQ(tokens.size(), expected.size());
   for (int i = 0; i < tokens.size(); ++i) {
-    EXPECT_EQ(tokens_vec[i].type(), expected[i]);
+    EXPECT_EQ(tokens[i].type(), expected[i]);
   }
 }
 
@@ -84,7 +83,7 @@ TEST(ScannerTest, Comment) {
   ErrorReporter reporter;
   Scanner scanner(source, reporter);
 
-  std::list<Token> tokens = scanner.ScanTokens();
+  std::vector<Token> tokens = scanner.ScanTokens();
   EXPECT_EQ(tokens.size(), 1);
   EXPECT_EQ(tokens.front().type(), TokenType::LOX_EOF);
 }

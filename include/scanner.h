@@ -5,7 +5,7 @@
 #ifndef CCLOX_SCANNER_H
 #define CCLOX_SCANNER_H
 #include <string>
-#include <list>
+#include <vector>
 
 #include "token.h"
 #include "reporter.h"
@@ -14,13 +14,13 @@ namespace cclox {
 class Scanner {
  public:
   Scanner(const std::string& source, ErrorReporter& reporter);
-  std::list<Token> ScanTokens();
+  std::vector<Token> ScanTokens();
  private:
   std::string source_;
   size_t start_ = 0;
   size_t current_ = 0;
   size_t line_ = 1;
-  std::list<Token> tokens_;
+  std::vector<Token> tokens_;
   ErrorReporter& reporter_;
 
   bool End() const;

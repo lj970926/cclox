@@ -195,7 +195,7 @@ void Scanner::AddIdentifier() {
   AddToken(type);
 }
 
-std::list<Token> Scanner::ScanTokens() {
+std::vector<Token> Scanner::ScanTokens() {
   while (!End()) {
     start_ = current_;
     ScanToken();
