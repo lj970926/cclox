@@ -61,6 +61,7 @@ class Token {
   operator std::string() const;
   TokenType type() const;
   const std::string& lexeme() const;
+  const OptionalLiteral& literal() const;
  private:
   TokenType type_;
   size_t line_;

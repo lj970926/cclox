@@ -68,4 +68,8 @@ const std::string& Token::lexeme() const {
   return lexeme_;
 }
 
+const OptionalLiteral& Token::literal() const {
+  return literal_;
+}
+
 } //namespace cclox

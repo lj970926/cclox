@@ -23,6 +23,9 @@ class Parser {
   ExprPtr Equality();
   ExprPtr Comparison();
   ExprPtr Term();
+  ExprPtr Factor();
+  ExprPtr Unary();
+  ExprPtr Primary();
 
   bool Match(const std::initializer_list<TokenType>& types);
   bool Check(TokenType type) const;
@@ -30,6 +33,8 @@ class Parser {
   bool End() const;
   Token Peek() const;
   Token Previous() const;
+
+  Token Consume(TokenType type, const std::string& message);
 };
 } //namespace cclox
 
