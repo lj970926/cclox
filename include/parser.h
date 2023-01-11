@@ -21,6 +21,9 @@ class Parser {
 
   ExprPtr Expression();
   ExprPtr Equality();
+  ExprPtr Comparison();
+  ExprPtr Term();
+
   bool Match(const std::initializer_list<TokenType>& types);
   bool Check(TokenType type) const;
   Token Advance();
