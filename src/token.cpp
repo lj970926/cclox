@@ -72,4 +72,8 @@ const OptionalLiteral& Token::literal() const {
   return literal_;
 }
 
+size_t Token::line() const {
+  return line_;
+}
+
 } //namespace cclox

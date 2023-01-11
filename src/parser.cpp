@@ -8,7 +8,8 @@
 #include <utility>
 
 namespace cclox {
-Parser::Parser(const std::vector<Token> &tokens): tokens_(tokens) {}
+Parser::Parser(const std::vector<Token> &tokens, ErrorReporter& reporter)
+    : tokens_(tokens), reporter_(reporter) {}
 
 ExprPtr Parser::Expression() {
   return Equality();
@@ -116,5 +117,22 @@ Token Parser::Peek() const {
 
 bool Parser::End() const {
   return Peek().type() == TokenType::LOX_EOF;
+}
+
+Token Parser::Consume(TokenType type, const std::string &message) {
+  if (Check(type)) return Advance();
+  throw Error(Peek(), message);
+}
+
+ParseError Parser::Error(cclox::Token token, const std::string &message) const {
+  std::string error_msg;
+  if (token.type() == TokenType::LOX_EOF) {
+    error_msg = "at end, " + message;
+  } else {
+    error_msg = "at '" + token.lexeme() + "', " + message;
+  }
+
+  reporter_.set_error(token.line(), error_msg);
+  return {};
 }
 } //namespace cclox
