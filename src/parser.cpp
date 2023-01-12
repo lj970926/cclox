@@ -67,6 +67,7 @@ ExprPtr Parser::Factor() {
     ExprPtr right = Unary();
     expr = std::make_unique<BinaryExpr>(std::move(expr), op, std::move(right));
   }
+  return expr;
 }
 
 ExprPtr Parser::Unary() {
