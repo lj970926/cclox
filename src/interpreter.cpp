@@ -11,6 +11,7 @@
 
 #include "scanner.h"
 #include "parser.h"
+#include "ast_printer.h"
 
 namespace cclox {
 void Interpreter::RunFile(const std::string &path) {
@@ -49,6 +50,9 @@ void Interpreter::Run(const std::string &source) {
     had_error_ = true;
     return ;
   }
+
+  AstPrinter printer;
+  std::cout << printer.Print(*expr.get()) << std::endl;
 
 }
 } //namespace cclox
