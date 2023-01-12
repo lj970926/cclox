@@ -11,6 +11,14 @@ namespace cclox {
 Parser::Parser(const std::vector<Token> &tokens, ErrorReporter& reporter)
     : tokens_(tokens), reporter_(reporter) {}
 
+ExprPtr Parser::Parse() {
+  try {
+    return Expression();
+  } catch (const ParseError& error) {
+    return nullptr;
+  }
+}
+
 ExprPtr Parser::Expression() {
   return Equality();
 }
@@ -85,6 +93,7 @@ ExprPtr Parser::Primary() {
     Consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
     return std::make_unique<GroupingExpr>(std::move(expr));
   }
+  throw Error(Peek(), "Expect expression.");
 }
 
 bool Parser::Match(const std::initializer_list<TokenType> &types) {

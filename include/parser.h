@@ -19,6 +19,7 @@ class ParseError: public std::exception {};
 class Parser {
  public:
   Parser(const std::vector<Token>& tokens, ErrorReporter& reporter);
+  ExprPtr Parse();
  private:
   std::vector<Token> tokens_;
   size_t current_ = 0;

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "scanner.h"
+#include "parser.h"
 
 namespace cclox {
 void Interpreter::RunFile(const std::string &path) {
@@ -37,10 +38,17 @@ void Interpreter::Run(const std::string &source) {
   if (reporter_.status() != LoxStatus::OK) {
     reporter_.Print();
     had_error_ = true;
+    return ;
   }
 
-  for (const auto& token: tokens) {
-    std::cout << static_cast<std::string>(token) << std::endl;
+  Parser parser(tokens, reporter_);
+  ExprPtr expr = parser.Parse();
+
+  if (reporter_.status() != LoxStatus::OK) {
+    reporter_.Print();
+    had_error_ = true;
+    return ;
   }
+
 }
 } //namespace cclox
