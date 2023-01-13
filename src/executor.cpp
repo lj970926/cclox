@@ -75,7 +75,7 @@ void Executor::VisitBinary(const BinaryExpr &expr) {
 }
 
 OptionalLiteral Executor::Evaluate(const Expr &expr) {
-  expr.accept(*this);
+  expr.Accept(*this);
   return value_;
 }
 

@@ -14,7 +14,7 @@ class AstPrinter: public Visitor {
  public:
   const std::string& result() { return result_; }
   const std::string& Print(const Expr& expr) {
-    expr.accept(*this);
+    expr.Accept(*this);
     return result();
   }
   void VisitBinary(const BinaryExpr& binary) override;

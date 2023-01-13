@@ -27,7 +27,7 @@ void AstPrinter::Parenthesize(const std::string &name, const std::initializer_li
   result_ = result_ + "(" + name;
   for (const Expr* expr: exprs) {
     result_ += " ";
-    expr->accept(*this);
+    expr->Accept(*this);
   }
   result_ += ")";
 }
