@@ -20,10 +20,48 @@ void Executor::VisitUnary(const UnaryExpr &expr) {
   auto right = Evaluate(*expr.right.get());
   switch (expr.token.type()) {
     case TokenType::MINUS:
-      value_ = - std::get<double>(right.value());
+      value_ = -DOUBLE_VALUE(right);
       break ;
     case TokenType::BANG:
-      value_ = IsTruthy(right) ? "false" : "true";
+      value_ = BOOL_STRING(IsTruthy(right));
+      break ;
+    default:
+      break ;
+  }
+}
+
+void Executor::VisitBinary(const BinaryExpr &expr) {
+  auto left = Evaluate(*expr.left.get());
+  auto right = Evaluate(*expr.right.get());
+
+  switch (expr.token.type()) {
+    case TokenType::GREATER:
+      value_ = BOOL_STRING(DOUBLE_VALUE(left) > DOUBLE_VALUE(right));
+      break ;
+    case TokenType::GREATER_EQUAL:
+      value_ = BOOL_STRING(DOUBLE_VALUE(left) >= DOUBLE_VALUE(right));
+      break ;
+    case TokenType::LESS:
+      value_ = BOOL_STRING(DOUBLE_VALUE(left) < DOUBLE_VALUE(right));
+      break ;
+    case TokenType::LESS_EQUAL:
+      value_ = BOOL_STRING(DOUBLE_VALUE(left) <= DOUBLE_VALUE(right));
+      break ;
+    case TokenType::MINUS:
+      value_ = DOUBLE_VALUE(left) - DOUBLE_VALUE(right);
+      break ;
+    case TokenType::SLASH:
+      value_ = DOUBLE_VALUE(left) / DOUBLE_VALUE(right);
+      break ;
+    case TokenType::STAR:
+      value_ = DOUBLE_VALUE(left) * DOUBLE_VALUE(right);
+      break ;
+    case TokenType::PLUS:
+      if (IS_DOUBLE(left) && IS_DOUBLE(right)) {
+        value_ = DOUBLE_VALUE(left) + DOUBLE_VALUE(right);
+      } else if (IS_STRING(left) && IS_STRING(right)) {
+        value_ = STRING_VALUE(left) + STRING_VALUE(right);
+      }
       break ;
     default:
       break ;
@@ -36,9 +74,8 @@ OptionalLiteral Executor::Evaluate(const Expr &expr) {
 }
 
 bool Executor::IsTruthy(OptionalLiteral value) const {
-  auto literal = value.value();
-  if (literal.index() == 0) {
-    std::string str_val = std::get<std::string>(literal);
+  if (IS_STRING(value)) {
+    std::string str_val = STRING_VALUE(value);
     return !(str_val == "false" || str_val == "nil");
   }
 
