@@ -9,9 +9,10 @@
 #include <iostream>
 #include <string>
 
+#include "common.h"
 #include "scanner.h"
 #include "parser.h"
-#include "ast_printer.h"
+#include "executor.h"
 
 namespace cclox {
 void Interpreter::RunFile(const std::string &path) {
@@ -21,6 +22,9 @@ void Interpreter::RunFile(const std::string &path) {
   Run(oss.str());
   if (had_error_)
     exit(65);
+
+  if (had_runtime_error_)
+    exit(70);
 }
 
 void Interpreter::RunPrompt() {
@@ -51,8 +55,15 @@ void Interpreter::Run(const std::string &source) {
     return ;
   }
 
-  AstPrinter printer;
-  std::cout << printer.Print(*expr.get()) << std::endl;
+  Executor executor(reporter_);
+  auto value = executor.Execute(expr);
 
+  if (reporter_.status() != LoxStatus::OK) {
+    reporter_.Print();
+    had_runtime_error_ = true;
+    return ;
+  }
+
+  std::cout << GetLiteralStr(value) << std::endl;
 }
 } //namespace cclox

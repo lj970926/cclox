@@ -18,6 +18,7 @@ class Interpreter {
   Interpreter() = default;
  private:
   bool had_error_ = false;
+  bool had_runtime_error_ = false;
   ErrorReporter reporter_;
 
   void Run(const std::string& source);

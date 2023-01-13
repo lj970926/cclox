@@ -14,6 +14,7 @@ class RuntimeError: public std::runtime_error {
  public:
   RuntimeError(Token token, const std::string& message)
       : std::runtime_error(message.c_str()), token_(token) {}
+  Token token() const { return token_; }
  private:
   Token token_;
 };
