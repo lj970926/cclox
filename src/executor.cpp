@@ -5,6 +5,7 @@
 #include "executor.h"
 
 #include <variant>
+#include <string>
 
 namespace cclox {
 void Executor::VisitLiteral(const LiteralExpr &expr) {
@@ -21,6 +22,9 @@ void Executor::VisitUnary(const UnaryExpr &expr) {
     case TokenType::MINUS:
       value_ = - std::get<double>(right.value());
       break ;
+    case TokenType::BANG:
+      value_ = IsTruthy(right) ? "false" : "true";
+      break ;
     default:
       break ;
   }
@@ -29,5 +33,15 @@ void Executor::VisitUnary(const UnaryExpr &expr) {
 OptionalLiteral Executor::Evaluate(const Expr &expr) {
   expr.accept(*this);
   return value_;
+}
+
+bool Executor::IsTruthy(OptionalLiteral value) const {
+  auto literal = value.value();
+  if (literal.index() == 0) {
+    std::string str_val = std::get<std::string>(literal);
+    return !(str_val == "false" || str_val == "nil");
+  }
+
+  return true;
 }
 } //namespace cclox
