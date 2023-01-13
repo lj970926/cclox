@@ -63,6 +63,12 @@ void Executor::VisitBinary(const BinaryExpr &expr) {
         value_ = STRING_VALUE(left) + STRING_VALUE(right);
       }
       break ;
+    case TokenType::EQUAL_EQUAL:
+      value_ = BOOL_STRING(IsEqual(left, right));
+      break ;
+    case TokenType::BANG_EQUAL:
+      value_ = BOOL_STRING(!IsEqual(left, right));
+      break ;
     default:
       break ;
   }
@@ -80,5 +86,9 @@ bool Executor::IsTruthy(OptionalLiteral value) const {
   }
 
   return true;
+}
+
+bool Executor::IsEqual(OptionalLiteral lhs, OptionalLiteral rhs) const {
+  return lhs == rhs;
 }
 } //namespace cclox

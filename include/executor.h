@@ -19,6 +19,7 @@ class Executor: public Visitor {
 
   OptionalLiteral Evaluate(const Expr& expr);
   bool IsTruthy(OptionalLiteral value) const;
+  bool IsEqual(OptionalLiteral lhs, OptionalLiteral rhs) const;
 };
 } //namespace cclox
 
