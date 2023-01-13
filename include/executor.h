@@ -16,6 +16,8 @@ class Executor: public Visitor {
   void VisitUnary(const UnaryExpr& expr) override;
  private:
   OptionalLiteral value_;
+
+  OptionalLiteral Evaluate(const Expr& expr);
 };
 } //namespace cclox
 
