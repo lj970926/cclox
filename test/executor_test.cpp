@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <string>
+#include <variant>
 
 #include "token.h"
 #include "reporter.h"
@@ -36,6 +37,29 @@ TEST(ExecutorTest, ValidExpr) {
     Parser parser(tokens, reporter);
     ExprPtr expr = parser.Parse();
     ASSERT_EQ(reporter.status(), LoxStatus::OK);
+
+    Executor executor(reporter);
+    auto res = executor.Execute(expr);
+    ASSERT_EQ(reporter.status(), LoxStatus::OK);
+    EXPECT_EQ(res, expected[i]) << "i = " << i;
   }
+}
+
+TEST(ExecutorTest, InvalidExpr) {
+  std::string text = "1 + \"a\"";
+  ErrorReporter reporter;
+  Scanner scanner(text, reporter);
+  auto tokens = scanner.ScanTokens();
+  ASSERT_EQ(reporter.status(), LoxStatus::OK);
+
+  Parser parser(tokens, reporter);
+  ExprPtr expr = parser.Parse();
+  ASSERT_EQ(reporter.status(), LoxStatus::OK);
+
+  Executor executor(reporter);
+  auto res = executor.Execute(expr);
+  ASSERT_EQ(reporter.status(), LoxStatus::ERROR);
+  ASSERT_EQ(res, std::nullopt);
+
 }
 } //namespace cclox

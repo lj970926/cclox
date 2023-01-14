@@ -10,7 +10,7 @@
 #include "error.h"
 
 namespace cclox {
-Executor::Executor(cclox::ErrorReporter &reporter): reporter_(reporter) {}
+Executor::Executor(ErrorReporter &reporter): reporter_(reporter) {}
 
 void Executor::VisitLiteral(const LiteralExpr &expr) {
   value_ = expr.value;
@@ -28,7 +28,7 @@ void Executor::VisitUnary(const UnaryExpr &expr) {
       value_ = -DOUBLE_VALUE(right);
       break ;
     case TokenType::BANG:
-      value_ = BOOL_STRING(IsTruthy(right));
+      value_ = BOOL_STRING(!IsTruthy(right));
       break ;
     default:
       break ;
@@ -91,9 +91,10 @@ void Executor::VisitBinary(const BinaryExpr &expr) {
 OptionalLiteral Executor::Execute(const ExprPtr &expr) {
   try {
     return Evaluate(*expr.get());
-  } catch (RuntimeError error) {
+  } catch (const RuntimeError& error) {
     reporter_.set_error(error.token().line(), error.what());
   }
+  return {};
 }
 
 OptionalLiteral Executor::Evaluate(const Expr &expr) {

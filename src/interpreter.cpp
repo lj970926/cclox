@@ -32,6 +32,7 @@ void Interpreter::RunPrompt() {
   while (std::cout << ">" && std::getline(std::cin, line)) {
     Run(line);
     had_error_ = false;
+    had_runtime_error_ = true;
   }
   std::cout << "Bye!\n";
 }

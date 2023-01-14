@@ -57,8 +57,8 @@ using OptionalLiteral = std::optional<Literal>;
 
 #define DOUBLE_VALUE(literal) (std::get<double>((literal).value()))
 #define STRING_VALUE(literal) (std::get<std::string>((literal).value()))
-#define IS_DOUBLE(literal) ((literal).value().index() == 0)
-#define IS_STRING(literal) ((literal).value().index() == 1)
+#define IS_DOUBLE(literal) ((literal).value().index() == 1)
+#define IS_STRING(literal) ((literal).value().index() == 0)
 #define BOOL_STRING(val) ((val) ? "true" : "false")
 
 class Token {
