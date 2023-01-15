@@ -6,8 +6,10 @@
 
 #include <variant>
 #include <string>
+#include <iostream>
 
 #include "error.h"
+#include "common.h"
 
 namespace cclox {
 Executor::Executor(ErrorReporter &reporter): reporter_(reporter) {}
@@ -17,11 +19,11 @@ void Executor::VisitLiteral(const LiteralExpr &expr) {
 }
 
 void Executor::VisitGrouping(const GroupingExpr &expr) {
-  Evaluate(*expr.expr.get());
+  EvaluateExpr(*expr.expr.get());
 }
 
 void Executor::VisitUnary(const UnaryExpr &expr) {
-  auto right = Evaluate(*expr.right.get());
+  auto right = EvaluateExpr(*expr.right.get());
   switch (expr.token.type()) {
     case TokenType::MINUS:
       CheckNumberOperand(expr.token, {right});
@@ -36,8 +38,8 @@ void Executor::VisitUnary(const UnaryExpr &expr) {
 }
 
 void Executor::VisitBinary(const BinaryExpr &expr) {
-  auto left = Evaluate(*expr.left.get());
-  auto right = Evaluate(*expr.right.get());
+  auto left = EvaluateExpr(*expr.left.get());
+  auto right = EvaluateExpr(*expr.right.get());
 
   switch (expr.token.type()) {
     case TokenType::GREATER:
@@ -88,16 +90,30 @@ void Executor::VisitBinary(const BinaryExpr &expr) {
   }
 }
 
-OptionalLiteral Executor::Execute(const ExprPtr &expr) {
+void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
+  EvaluateExpr(*stmt.expr);
+}
+
+void Executor::VisitPrintStmt(const PrintStmt &stmt) {
+    auto value = EvaluateExpr(*stmt.expr.get());
+    std::cout << GetLiteralStr(value) << std::endl;
+}
+
+void Executor::Execute(const std::vector<StmtPtr>& stmts) {
   try {
-    return Evaluate(*expr.get());
+    for (const auto& stmt: stmts) {
+      EvaluateStmt(*stmt);
+    }
   } catch (const RuntimeError& error) {
     reporter_.set_error(error.token().line(), error.what());
   }
-  return {};
 }
 
-OptionalLiteral Executor::Evaluate(const Expr &expr) {
+void Executor::EvaluateStmt(const Stmt& stmt) {
+  stmt.Accept(*this);
+}
+
+OptionalLiteral Executor::EvaluateExpr(const Expr &expr) {
   expr.Accept(*this);
   return value_;
 }

@@ -11,14 +11,34 @@ namespace cclox {
 Parser::Parser(const std::vector<Token> &tokens, ErrorReporter& reporter)
     : tokens_(tokens), reporter_(reporter) {}
 
-ExprPtr Parser::Parse() {
+std::vector<StmtPtr> Parser::Parse() {
+  std::vector<StmtPtr> stmts;
   try {
-    return Expression();
+    stmts.emplace_back(Statement());
   } catch (const ParseError& error) {
     return nullptr;
   }
 }
 
+StmtPtr Parser::Statement() {
+  if (Match({TokenType::PRINT})) {
+    return PrintStatement();
+  }
+
+  return ExpressionStatement();
+}
+
+StmtPtr Parser::PrintStatement() {
+  ExprPtr expr = Expression();
+  Consume(TokenType::SEMICOLON, "Expect ';' after value.");
+  return std::make_unique<PrintStmt>(std::move(expr));
+}
+
+StmtPtr Parser::ExpressionStatement() {
+  ExprPtr expr = Expression();
+  Consume(TokenType::SEMICOLON, "Expect ';' after value.");
+  return std::make_unique<ExpressionStmt>(std::move(expr));
+}
 ExprPtr Parser::Expression() {
   return Equality();
 }

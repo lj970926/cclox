@@ -12,6 +12,7 @@
 #include "token.h"
 #include "expr.h"
 #include "reporter.h"
+#include "stmt.h"
 
 namespace cclox {
 class ParseError: public std::exception {};
@@ -19,7 +20,7 @@ class ParseError: public std::exception {};
 class Parser {
  public:
   Parser(const std::vector<Token>& tokens, ErrorReporter& reporter);
-  ExprPtr Parse();
+  std::vector<StmtPtr> Parse();
  private:
   std::vector<Token> tokens_;
   size_t current_ = 0;
@@ -32,6 +33,10 @@ class Parser {
   ExprPtr Factor();
   ExprPtr Unary();
   ExprPtr Primary();
+
+  StmtPtr Statement();
+  StmtPtr PrintStatement();
+  StmtPtr ExpressionStatement();
 
   bool Match(const std::initializer_list<TokenType>& types);
   bool Check(TokenType type) const;
