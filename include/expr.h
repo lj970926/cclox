@@ -16,6 +16,7 @@ struct BinaryExpr;
 struct GroupingExpr;
 struct LiteralExpr;
 struct UnaryExpr;
+struct VariableExpr;
 
 class ExprVisitor {
  public:
@@ -25,6 +26,7 @@ class ExprVisitor {
   virtual void VisitGrouping(const GroupingExpr& group) = 0;
   virtual void VisitLiteral(const LiteralExpr& literal) = 0;
   virtual void VisitUnary(const UnaryExpr& unary) = 0;
+  virtual void VisitVariable(const VariableExpr& var) = 0;
 };
 
 struct Expr: NonCopyable {
@@ -70,6 +72,15 @@ struct UnaryExpr: public Expr {
 
   void Accept(ExprVisitor& visitor) const override {
     visitor.VisitUnary(*this);
+  }
+};
+
+struct VariableExpr: public Expr {
+  Token name;
+  explicit VariableExpr(Token n): name(n) {}
+
+  void Accept(ExprVisitor& visitor) const override {
+    visitor.VisitVariable(*this);
   }
 };
 

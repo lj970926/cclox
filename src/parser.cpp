@@ -25,8 +25,19 @@ StmtPtr Parser::Declaration() {
     if (Match({TokenType::VAR})) return VarDeclaration();
     return Statement();
   } catch (const ParseError& error) {
+    Synchronize();
     return nullptr;
   }
+}
+
+StmtPtr Parser::VarDeclaration() {
+  Token name = Consume(TokenType::IDENTIFIER, "Expect variable name.");
+  ExprPtr init_expr;
+  if (Match({TokenType::EQUAL})) {
+    init_expr = Expression();
+  }
+  Consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
+  return std::make_unique<VarStmt>(name, std::move(init_expr));
 }
 
 StmtPtr Parser::Statement() {
@@ -117,6 +128,9 @@ ExprPtr Parser::Primary() {
   if (Match({TokenType::NUMBER, TokenType::STRING})) {
     return std::make_unique<LiteralExpr>(Previous().literal());
   }
+
+  if (Match({TokenType::IDENTIFIER}))
+    return std::make_unique<VariableExpr>(Previous());
 
   if (Match({TokenType::LEFT_PAREN})) {
     ExprPtr expr = Expression();
