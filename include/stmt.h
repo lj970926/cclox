@@ -13,11 +13,13 @@ namespace cclox {
 
 struct ExpressionStmt;
 struct PrintStmt;
+struct VarStmt;
 
 class StmtVisitor {
  public:
   virtual void VisitExpressionStmt(const ExpressionStmt& stmt) = 0;
   virtual void VisitPrintStmt(const PrintStmt& stmt) = 0;
+  virtual void VisitVarStmt(const VarStmt& stmt) = 0;
 };
 
 struct Stmt: public NonCopyable {
@@ -39,6 +41,17 @@ struct PrintStmt: public Stmt {
   explicit PrintStmt(ExprPtr e): expr(std::move(e)) {}
   void Accept(StmtVisitor& visitor) const override {
     visitor.VisitPrintStmt(*this);
+  }
+};
+
+struct VarStmt: public Stmt {
+  Token name;
+  ExprPtr init_expr;
+
+  VarStmt(Token n, ExprPtr e): name(n), init_expr(std::move(e)) {}
+
+  void Accept(StmtVisitor& visitor) const override {
+    visitor.VisitVarStmt(*this);
   }
 };
 

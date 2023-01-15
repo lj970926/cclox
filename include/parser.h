@@ -37,6 +37,8 @@ class Parser {
   StmtPtr Statement();
   StmtPtr PrintStatement();
   StmtPtr ExpressionStatement();
+  StmtPtr Declaration();
+  StmtPtr VarDeclaration();
 
   bool Match(const std::initializer_list<TokenType>& types);
   bool Check(TokenType type) const;
@@ -47,6 +49,7 @@ class Parser {
 
   Token Consume(TokenType type, const std::string& message);
   ParseError Error(Token token, const std::string& message) const;
+  void Synchronize();
 };
 } //namespace cclox
 
