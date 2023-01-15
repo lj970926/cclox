@@ -25,7 +25,7 @@ class Executor: public ExprVisitor, public StmtVisitor{
   void VisitPrintStmt(const PrintStmt& stmt) override;
 
   void Execute(const std::vector<StmtPtr>& stmts);
-
+  OptionalLiteral Execute(const ExprPtr& expr);
  private:
   OptionalLiteral value_;
   ErrorReporter& reporter_;

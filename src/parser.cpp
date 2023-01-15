@@ -14,10 +14,13 @@ Parser::Parser(const std::vector<Token> &tokens, ErrorReporter& reporter)
 std::vector<StmtPtr> Parser::Parse() {
   std::vector<StmtPtr> stmts;
   try {
-    stmts.emplace_back(Statement());
+    while (!End()) {
+      stmts.emplace_back(Statement());
+    }
   } catch (const ParseError& error) {
-    return nullptr;
+    return {};
   }
+  return stmts;
 }
 
 StmtPtr Parser::Statement() {

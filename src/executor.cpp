@@ -109,6 +109,15 @@ void Executor::Execute(const std::vector<StmtPtr>& stmts) {
   }
 }
 
+OptionalLiteral Executor::Execute(const ExprPtr &expr) {
+  try {
+    return EvaluateExpr(*expr);
+  } catch (const RuntimeError& error) {
+    reporter_.set_error(error.token().line(), error.what());
+  }
+  return {};
+}
+
 void Executor::EvaluateStmt(const Stmt& stmt) {
   stmt.Accept(*this);
 }

@@ -32,9 +32,10 @@ void Interpreter::RunPrompt() {
   while (std::cout << ">" && std::getline(std::cin, line)) {
     Run(line);
     had_error_ = false;
-    had_runtime_error_ = true;
+    had_runtime_error_ = false;
+    reporter_.clear();
   }
-  std::cout << "Bye!\n";
+  std::cout << "\n\nBye!\n";
 }
 
 void Interpreter::Run(const std::string &source) {
@@ -48,7 +49,7 @@ void Interpreter::Run(const std::string &source) {
   }
 
   Parser parser(tokens, reporter_);
-  ExprPtr expr = parser.Parse();
+  auto statements = parser.Parse();
 
   if (reporter_.status() != LoxStatus::OK) {
     reporter_.Print();
@@ -57,14 +58,12 @@ void Interpreter::Run(const std::string &source) {
   }
 
   Executor executor(reporter_);
-  auto value = executor.Execute(expr);
+  executor.Execute(statements);
 
   if (reporter_.status() != LoxStatus::OK) {
     reporter_.Print();
     had_runtime_error_ = true;
     return ;
   }
-
-  std::cout << GetLiteralStr(value) << std::endl;
 }
 } //namespace cclox

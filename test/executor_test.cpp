@@ -16,10 +16,10 @@
 
 namespace cclox {
 TEST(ExecutorTest, ValidExpr) {
-  std::vector<std::string> texts {"1 + 1", "2 - 1", "2 * 3", "4 / 2",
-                                 "(-3 + 2) * 5", "3 > 2", "1 == 2", "4 >= 2",
-                                 "1 != 2", "1 < 2", "1 <= 1", "!nil", "!false",
-                                 "!\"fuck\"", "!0", "\"fuck\" + \"you\"", "2 == \"2\""};
+  std::vector<std::string> texts {"1 + 1;", "2 - 1;", "2 * 3;", "4 / 2;",
+                                 "(-3 + 2) * 5;", "3 > 2;", "1 == 2;", "4 >= 2;",
+                                 "1 != 2;", "1 < 2;", "1 <= 1;", "!nil;", "!false;",
+                                 "!\"fuck\";", "!0;", "\"fuck\" + \"you\";", "2 == \"2\";"};
   std::vector<OptionalLiteral> expected {{2.0}, {1.0}, {6.0}, {2.0},
                                         {-5.0}, {"true"}, {"false"},
                                         {"true"}, {"true"}, {"true"}, {"true"},
@@ -35,29 +35,33 @@ TEST(ExecutorTest, ValidExpr) {
     ASSERT_EQ(reporter.status(), LoxStatus::OK);
 
     Parser parser(tokens, reporter);
-    ExprPtr expr = parser.Parse();
+    auto stmts = parser.Parse();
     ASSERT_EQ(reporter.status(), LoxStatus::OK);
+    ASSERT_EQ(stmts.size(), 1);
 
+    auto stmt = dynamic_cast<ExpressionStmt*>(stmts[0].get());
     Executor executor(reporter);
-    auto res = executor.Execute(expr);
+    auto res = executor.Execute(stmt->expr);
     ASSERT_EQ(reporter.status(), LoxStatus::OK);
     EXPECT_EQ(res, expected[i]) << "i = " << i;
   }
 }
 
 TEST(ExecutorTest, InvalidExpr) {
-  std::string text = "1 + \"a\"";
+  std::string text = "1 + \"a\";";
   ErrorReporter reporter;
   Scanner scanner(text, reporter);
   auto tokens = scanner.ScanTokens();
   ASSERT_EQ(reporter.status(), LoxStatus::OK);
 
   Parser parser(tokens, reporter);
-  ExprPtr expr = parser.Parse();
+  auto stmts = parser.Parse();
   ASSERT_EQ(reporter.status(), LoxStatus::OK);
+  ASSERT_EQ(stmts.size(), 1);
 
+  auto stmt = dynamic_cast<ExpressionStmt*>(stmts[0].get());
   Executor executor(reporter);
-  auto res = executor.Execute(expr);
+  auto res = executor.Execute(stmt->expr);
   ASSERT_EQ(reporter.status(), LoxStatus::ERROR);
   ASSERT_EQ(res, std::nullopt);
 
