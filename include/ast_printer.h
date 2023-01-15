@@ -10,7 +10,7 @@
 #include <initializer_list>
 
 namespace cclox {
-class AstPrinter: public Visitor {
+class AstPrinter: public ExprVisitor {
  public:
   const std::string& result() { return result_; }
   const std::string& Print(const Expr& expr) {

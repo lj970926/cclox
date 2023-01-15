@@ -17,10 +17,10 @@ struct GroupingExpr;
 struct LiteralExpr;
 struct UnaryExpr;
 
-class Visitor {
+class ExprVisitor {
  public:
-  Visitor() = default;
-  virtual ~Visitor() = default;
+  ExprVisitor() = default;
+  virtual ~ExprVisitor() = default;
   virtual void VisitBinary(const BinaryExpr& binary) = 0;
   virtual void VisitGrouping(const GroupingExpr& group) = 0;
   virtual void VisitLiteral(const LiteralExpr& literal) = 0;
@@ -28,7 +28,7 @@ class Visitor {
 };
 
 struct Expr: NonCopyable {
-  virtual void Accept(Visitor& visitor) const = 0;
+  virtual void Accept(ExprVisitor& visitor) const = 0;
 };
 
 using ExprPtr = std::unique_ptr<Expr>;
@@ -40,7 +40,7 @@ struct BinaryExpr: public Expr {
   BinaryExpr(ExprPtr l, Token t, ExprPtr r)
       : left(std::move(l)), token(t), right(std::move(r)) {}
 
-  void Accept(Visitor& visitor) const override {
+  void Accept(ExprVisitor& visitor) const override {
     visitor.VisitBinary(*this);
   }
 };
@@ -49,7 +49,7 @@ struct GroupingExpr: public Expr {
   ExprPtr expr;
   explicit GroupingExpr(ExprPtr e): expr(std::move(e)) {}
 
-  void Accept(Visitor& visitor) const override {
+  void Accept(ExprVisitor& visitor) const override {
     visitor.VisitGrouping(*this);
   }
 };
@@ -58,7 +58,7 @@ struct LiteralExpr: public Expr {
   OptionalLiteral value;
   explicit LiteralExpr(OptionalLiteral v): value(v) {}
 
-  void Accept(Visitor& visitor) const override {
+  void Accept(ExprVisitor& visitor) const override {
     visitor.VisitLiteral(*this);
   }
 };
@@ -68,7 +68,7 @@ struct UnaryExpr: public Expr {
   ExprPtr right;
   UnaryExpr(Token t, ExprPtr r): token(t), right(std::move(r)) {}
 
-  void Accept(Visitor& visitor) const override {
+  void Accept(ExprVisitor& visitor) const override {
     visitor.VisitUnary(*this);
   }
 };

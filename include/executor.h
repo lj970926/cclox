@@ -11,7 +11,7 @@
 #include "reporter.h"
 
 namespace cclox {
-class Executor: public Visitor {
+class Executor: public ExprVisitor {
  public:
   Executor(ErrorReporter& reporter);
   void VisitBinary(const BinaryExpr& expr) override;
