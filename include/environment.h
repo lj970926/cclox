@@ -16,6 +16,7 @@ class Environment: public NonCopyable {
  public:
   void Define(const std::string& name, OptionalLiteral value);
   OptionalLiteral Get(Token name);
+  void Assign(Token name, OptionalLiteral value);
  private:
   std::unordered_map<std::string, OptionalLiteral> variables_;
 };

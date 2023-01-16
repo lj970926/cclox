@@ -60,7 +60,7 @@ StmtPtr Parser::ExpressionStatement() {
   return std::make_unique<ExpressionStmt>(std::move(expr));
 }
 ExprPtr Parser::Expression() {
-  return Equality();
+  return Assignment();
 }
 
 ExprPtr Parser::Equality() {
@@ -138,6 +138,24 @@ ExprPtr Parser::Primary() {
     return std::make_unique<GroupingExpr>(std::move(expr));
   }
   throw Error(Peek(), "Expect expression.");
+}
+
+ExprPtr Parser::Assignment() {
+  ExprPtr expr = Equality();
+
+  if (Match({TokenType::EQUAL})) {
+    Token equal = Previous();
+    ExprPtr value = Assignment();
+
+    auto var = dynamic_cast<VariableExpr*>(expr.get());
+    if (var) {
+      return std::make_unique<AssignExpr>(var->name, std::move(value));
+    }
+
+    Error(equal, "Invalid assignment target.");
+  }
+
+  return expr;
 }
 
 bool Parser::Match(const std::initializer_list<TokenType> &types) {

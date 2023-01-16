@@ -94,6 +94,12 @@ void Executor::VisitVariable(const VariableExpr &expr) {
   value_ = environment_.Get(expr.name);
 }
 
+void Executor::VisitAssign(const AssignExpr &expr) {
+  auto value = EvaluateExpr(*expr.expr);
+  environment_.Assign(expr.name, value);
+  value_ = value;
+}
+
 void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
   EvaluateExpr(*stmt.expr);
 }

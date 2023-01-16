@@ -33,6 +33,7 @@ class Parser {
   ExprPtr Factor();
   ExprPtr Unary();
   ExprPtr Primary();
+  ExprPtr Assignment();
 
   StmtPtr Statement();
   StmtPtr PrintStatement();

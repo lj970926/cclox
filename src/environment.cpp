@@ -17,4 +17,13 @@ OptionalLiteral Environment::Get(Token name) {
   throw RuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
 }
 
+void Environment::Assign(Token name, OptionalLiteral value) {
+  if (variables_.find(name.lexeme()) != variables_.end()) {
+    variables_[name.lexeme()] = value;
+    return ;
+  }
+
+  throw RuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
+}
+
 } //namespace cclox

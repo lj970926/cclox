@@ -27,6 +27,10 @@ void AstPrinter::VisitVariable(const VariableExpr &var) {
   result_ += var.name.lexeme();
 }
 
+void AstPrinter::VisitAssign(const AssignExpr &assign) {
+  Parenthesize(assign.name.lexeme(), {assign.expr.get()});
+}
+
 void AstPrinter::Parenthesize(const std::string &name, const std::initializer_list<const Expr *> &exprs) {
   result_ = result_ + "(" + name;
   for (const Expr* expr: exprs) {
