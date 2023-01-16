@@ -57,8 +57,7 @@ void Interpreter::Run(const std::string &source) {
     return ;
   }
 
-  Executor executor(reporter_);
-  executor.Execute(statements);
+  executor_ .Execute(statements);
 
   if (reporter_.status() != LoxStatus::OK) {
     reporter_.Print();

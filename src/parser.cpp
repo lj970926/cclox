@@ -32,7 +32,7 @@ StmtPtr Parser::Declaration() {
 
 StmtPtr Parser::VarDeclaration() {
   Token name = Consume(TokenType::IDENTIFIER, "Expect variable name.");
-  ExprPtr init_expr;
+  ExprPtr init_expr = nullptr;
   if (Match({TokenType::EQUAL})) {
     init_expr = Expression();
   }

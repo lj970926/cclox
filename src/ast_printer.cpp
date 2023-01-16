@@ -20,7 +20,11 @@ void AstPrinter::VisitLiteral(const LiteralExpr &literal) {
 }
 
 void AstPrinter::VisitUnary(const UnaryExpr &unary) {
-  return Parenthesize(unary.token.lexeme(), {unary.right.get()});
+  Parenthesize(unary.token.lexeme(), {unary.right.get()});
+}
+
+void AstPrinter::VisitVariable(const VariableExpr &var) {
+  result_ += var.name.lexeme();
 }
 
 void AstPrinter::Parenthesize(const std::string &name, const std::initializer_list<const Expr *> &exprs) {

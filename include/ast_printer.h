@@ -21,6 +21,7 @@ class AstPrinter: public ExprVisitor {
   void VisitGrouping(const GroupingExpr& grouping) override;
   void VisitLiteral(const LiteralExpr& literal) override;
   void VisitUnary(const UnaryExpr& unary) override;
+  void VisitVariable(const VariableExpr& var) override;
 
  private:
   std::string result_;

@@ -11,6 +11,7 @@
 #include "token.h"
 #include "reporter.h"
 #include "stmt.h"
+#include "environment.h"
 
 namespace cclox {
 class Executor: public ExprVisitor, public StmtVisitor{
@@ -20,15 +21,18 @@ class Executor: public ExprVisitor, public StmtVisitor{
   void VisitGrouping(const GroupingExpr& expr) override;
   void VisitLiteral(const LiteralExpr& expr) override;
   void VisitUnary(const UnaryExpr& expr) override;
+  void VisitVariable(const VariableExpr& expr) override;
 
   void VisitExpressionStmt(const ExpressionStmt& stmt) override;
   void VisitPrintStmt(const PrintStmt& stmt) override;
+  void VisitVarStmt(const VarStmt& stmt) override;
 
   void Execute(const std::vector<StmtPtr>& stmts);
   OptionalLiteral Execute(const ExprPtr& expr);
  private:
   OptionalLiteral value_;
   ErrorReporter& reporter_;
+  Environment environment_;
 
   OptionalLiteral EvaluateExpr(const Expr& expr);
   void EvaluateStmt(const Stmt& stmt);

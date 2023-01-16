@@ -7,6 +7,7 @@
 #include <string>
 
 #include "reporter.h"
+#include "executor.h"
 
 namespace cclox {
 class Interpreter {
@@ -20,6 +21,7 @@ class Interpreter {
   bool had_error_ = false;
   bool had_runtime_error_ = false;
   ErrorReporter reporter_;
+  Executor executor_ {reporter_};
 
   void Run(const std::string& source);
 

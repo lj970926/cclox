@@ -90,6 +90,10 @@ void Executor::VisitBinary(const BinaryExpr &expr) {
   }
 }
 
+void Executor::VisitVariable(const VariableExpr &expr) {
+  value_ = environment_.Get(expr.name);
+}
+
 void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
   EvaluateExpr(*stmt.expr);
 }
@@ -97,6 +101,14 @@ void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
 void Executor::VisitPrintStmt(const PrintStmt &stmt) {
     auto value = EvaluateExpr(*stmt.expr.get());
     std::cout << GetLiteralStr(value) << std::endl;
+}
+
+void Executor::VisitVarStmt(const VarStmt &stmt) {
+  OptionalLiteral value = std::nullopt;
+  if (stmt.init_expr) {
+    value = EvaluateExpr(*stmt.init_expr);
+  }
+  environment_.Define(stmt.name.lexeme(), value);
 }
 
 void Executor::Execute(const std::vector<StmtPtr>& stmts) {
@@ -128,6 +140,8 @@ OptionalLiteral Executor::EvaluateExpr(const Expr &expr) {
 }
 
 bool Executor::IsTruthy(OptionalLiteral value) const {
+  if (value == std::nullopt)
+    return false;
   if (IS_STRING(value)) {
     std::string str_val = STRING_VALUE(value);
     return !(str_val == "false" || str_val == "nil");
