@@ -23,6 +23,7 @@ class AstPrinter: public ExprVisitor {
   void VisitUnary(const UnaryExpr& unary) override;
   void VisitVariable(const VariableExpr& var) override;
   void VisitAssign(const AssignExpr& assign) override;
+  void VisitLogic(const LogicExpr& logic) override;
 
  private:
   std::string result_;

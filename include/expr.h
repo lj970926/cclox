@@ -18,6 +18,7 @@ struct LiteralExpr;
 struct UnaryExpr;
 struct VariableExpr;
 struct AssignExpr;
+struct LogicExpr;
 
 class ExprVisitor {
  public:
@@ -29,6 +30,7 @@ class ExprVisitor {
   virtual void VisitUnary(const UnaryExpr& unary) = 0;
   virtual void VisitVariable(const VariableExpr& var) = 0;
   virtual void VisitAssign(const AssignExpr& assign) = 0;
+  virtual void VisitLogic(const LogicExpr& logic) = 0;
 };
 
 struct Expr: NonCopyable {
@@ -93,6 +95,18 @@ struct AssignExpr: public Expr {
 
   void Accept(ExprVisitor& visitor) const override {
     visitor.VisitAssign(*this);
+  }
+};
+
+struct LogicExpr: public Expr {
+  Token op;
+  ExprPtr left;
+  ExprPtr right;
+  LogicExpr(ExprPtr l, Token o, ExprPtr r)
+      : left(std::move(l)), op(o), right(std::move(r)) {}
+
+  void Accept(ExprVisitor& visitor) const override {
+    visitor.VisitLogic(*this);
   }
 };
 

@@ -31,6 +31,10 @@ void AstPrinter::VisitAssign(const AssignExpr &assign) {
   Parenthesize(assign.name.lexeme(), {assign.expr.get()});
 }
 
+void AstPrinter::VisitLogic(const cclox::LogicExpr &logic) {
+  Parenthesize(logic.op.lexeme(), {logic.left.get(), logic.right.get()});
+}
+
 void AstPrinter::Parenthesize(const std::string &name, const std::initializer_list<const Expr *> &exprs) {
   result_ = result_ + "(" + name;
   for (const Expr* expr: exprs) {

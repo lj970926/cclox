@@ -100,6 +100,24 @@ void Executor::VisitAssign(const AssignExpr &expr) {
   value_ = value;
 }
 
+void Executor::VisitLogic(const cclox::LogicExpr &expr) {
+  auto left = EvaluateExpr(*expr.left);
+
+  if (expr.op.type() == TokenType::OR) {
+    if (IsTruthy(left)) {
+      value_ = left;
+      return ;
+    }
+  } else {
+    if (!IsTruthy(left)) {
+      value_ = left;
+      return ;
+    }
+  }
+
+  value_ = EvaluateExpr(*expr.right);
+}
+
 void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
   EvaluateExpr(*stmt.expr);
 }
@@ -119,6 +137,14 @@ void Executor::VisitVarStmt(const VarStmt &stmt) {
 
 void Executor::VisitBlockStmt(const BlockStmt &stmt) {
   ExecuteBlock(stmt.stmts, std::make_shared<Environment>(environment_));
+}
+
+void Executor::VisitIfStmt(const cclox::IfStmt &stmt) {
+  if (IsTruthy(EvaluateExpr(*stmt.condition))) {
+    EvaluateStmt(*stmt.then_branch);
+  } else if (stmt.else_branch) {
+    EvaluateStmt(*stmt.else_branch);
+  }
 }
 
 void Executor::Execute(const std::vector<StmtPtr>& stmts) {

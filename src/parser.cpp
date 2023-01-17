@@ -172,7 +172,7 @@ ExprPtr Parser::Primary() {
 }
 
 ExprPtr Parser::Assignment() {
-  ExprPtr expr = Equality();
+  ExprPtr expr = Or();
 
   if (Match({TokenType::EQUAL})) {
     Token equal = Previous();
@@ -184,6 +184,30 @@ ExprPtr Parser::Assignment() {
     }
 
     Error(equal, "Invalid assignment target.");
+  }
+
+  return expr;
+}
+
+ExprPtr Parser::Or() {
+  ExprPtr expr = And();
+
+  while (Match({TokenType::OR})) {
+    Token op = Previous();
+    ExprPtr right = And();
+    expr = std::make_unique<LogicExpr>(std::move(expr), op, std::move(right));
+  }
+
+  return expr;
+}
+
+ExprPtr Parser::And() {
+  ExprPtr expr = Equality();
+
+  while (Match({TokenType::AND})) {
+    Token op = Previous();
+    ExprPtr right = Equality();
+    expr = std::make_unique<LogicExpr>(std::move(expr), op, std::move(right));
   }
 
   return expr;

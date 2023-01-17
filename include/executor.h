@@ -24,11 +24,13 @@ class Executor: public ExprVisitor, public StmtVisitor{
   void VisitUnary(const UnaryExpr& expr) override;
   void VisitVariable(const VariableExpr& expr) override;
   void VisitAssign(const AssignExpr& expr) override;
+  void VisitLogic(const LogicExpr& expr) override;
 
   void VisitExpressionStmt(const ExpressionStmt& stmt) override;
   void VisitPrintStmt(const PrintStmt& stmt) override;
   void VisitVarStmt(const VarStmt& stmt) override;
   void VisitBlockStmt(const BlockStmt& stmt) override;
+  void VisitIfStmt(const IfStmt& stmt) override;
 
   void Execute(const std::vector<StmtPtr>& stmts);
   OptionalLiteral Execute(const ExprPtr& expr);

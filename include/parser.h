@@ -34,6 +34,8 @@ class Parser {
   ExprPtr Unary();
   ExprPtr Primary();
   ExprPtr Assignment();
+  ExprPtr Or();
+  ExprPtr And();
 
   StmtPtr Statement();
   StmtPtr PrintStatement();
