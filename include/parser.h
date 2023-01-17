@@ -40,6 +40,7 @@ class Parser {
   StmtPtr ExpressionStatement();
   StmtPtr Declaration();
   StmtPtr VarDeclaration();
+  StmtPtr IfStatement();
 
   std::vector<StmtPtr> Block();
 

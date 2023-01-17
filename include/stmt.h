@@ -16,6 +16,7 @@ struct ExpressionStmt;
 struct PrintStmt;
 struct VarStmt;
 struct BlockStmt;
+struct IfStmt;
 
 class StmtVisitor {
  public:
@@ -23,6 +24,7 @@ class StmtVisitor {
   virtual void VisitPrintStmt(const PrintStmt& stmt) = 0;
   virtual void VisitVarStmt(const VarStmt& stmt) = 0;
   virtual void VisitBlockStmt(const BlockStmt& stmt) = 0;
+  virtual void VisitIfStmt(const IfStmt& stmt) = 0;
 };
 
 struct Stmt: public NonCopyable {
@@ -65,6 +67,18 @@ struct BlockStmt: public Stmt {
 
   void Accept(StmtVisitor& visitor) const override {
     visitor.VisitBlockStmt(*this);
+  }
+};
+
+struct IfStmt: public Stmt {
+  ExprPtr condition;
+  StmtPtr then_branch;
+  StmtPtr else_branch;
+
+  IfStmt(ExprPtr c, StmtPtr t, StmtPtr e): condition(std::move(c)), then_branch(std::move(t)), else_branch(std::move(e)) {}
+
+  void Accept(StmtVisitor& visitor) const override {
+    visitor.VisitIfStmt(*this);
   }
 };
 

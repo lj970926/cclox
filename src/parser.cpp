@@ -41,6 +41,9 @@ StmtPtr Parser::VarDeclaration() {
 }
 
 StmtPtr Parser::Statement() {
+  if (Match({TokenType::IF}))
+    return IfStatement();
+
   if (Match({TokenType::PRINT})) {
     return PrintStatement();
   }
@@ -50,6 +53,19 @@ StmtPtr Parser::Statement() {
   }
 
   return ExpressionStatement();
+}
+
+StmtPtr Parser::IfStatement() {
+    Consume(TokenType::LEFT_PAREN, "Expect '(' after if.");
+    ExprPtr condition = Expression();
+    Consume(TokenType::RIGHT_PAREN, "Expect ')' after if condition.");
+    StmtPtr then_branch = Statement();
+    StmtPtr else_branch = nullptr;
+    if (Match({TokenType::ELSE})) {
+      else_branch = Statement();
+    }
+
+    return std::make_unique<IfStmt>(std::move(condition), std::move(then_branch), std::move(else_branch));
 }
 
 StmtPtr Parser::PrintStatement() {
