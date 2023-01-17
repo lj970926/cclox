@@ -45,7 +45,7 @@ StmtPtr Parser::Statement() {
     return PrintStatement();
   }
 
-  if (Match({TokenType::RIGHT_BRACE})) {
+  if (Match({TokenType::LEFT_BRACE})) {
     return std::make_unique<BlockStmt>(Block());
   }
 
