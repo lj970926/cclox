@@ -41,6 +41,8 @@ class Parser {
   StmtPtr Declaration();
   StmtPtr VarDeclaration();
 
+  std::vector<StmtPtr> Block();
+
   bool Match(const std::initializer_list<TokenType>& types);
   bool Check(TokenType type) const;
   Token Advance();

@@ -45,6 +45,10 @@ StmtPtr Parser::Statement() {
     return PrintStatement();
   }
 
+  if (Match({TokenType::RIGHT_BRACE})) {
+    return std::make_unique<BlockStmt>(Block());
+  }
+
   return ExpressionStatement();
 }
 
@@ -59,6 +63,17 @@ StmtPtr Parser::ExpressionStatement() {
   Consume(TokenType::SEMICOLON, "Expect ';' after value.");
   return std::make_unique<ExpressionStmt>(std::move(expr));
 }
+
+std::vector<StmtPtr> Parser::Block() {
+  std::vector<StmtPtr> stmts;
+  while (!End() && !Check(TokenType::RIGHT_BRACE)) {
+    stmts.emplace_back(Declaration());
+  }
+
+  Consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");
+  return stmts;
+}
+
 ExprPtr Parser::Expression() {
   return Assignment();
 }

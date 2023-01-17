@@ -6,6 +6,7 @@
 #define CCLOX_EXECUTOR_H
 #include <initializer_list>
 #include <vector>
+#include <memory>
 
 #include "expr.h"
 #include "token.h"
@@ -27,13 +28,15 @@ class Executor: public ExprVisitor, public StmtVisitor{
   void VisitExpressionStmt(const ExpressionStmt& stmt) override;
   void VisitPrintStmt(const PrintStmt& stmt) override;
   void VisitVarStmt(const VarStmt& stmt) override;
+  void VisitBlockStmt(const BlockStmt& stmt) override;
 
   void Execute(const std::vector<StmtPtr>& stmts);
   OptionalLiteral Execute(const ExprPtr& expr);
+  void ExecuteBlock(const std::vector<StmtPtr>& stmts, std::shared_ptr<Environment> environment);
  private:
   OptionalLiteral value_;
   ErrorReporter& reporter_;
-  Environment environment_;
+  std::shared_ptr<Environment> environment_;
 
   OptionalLiteral EvaluateExpr(const Expr& expr);
   void EvaluateStmt(const Stmt& stmt);

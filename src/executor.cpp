@@ -12,7 +12,7 @@
 #include "common.h"
 
 namespace cclox {
-Executor::Executor(ErrorReporter &reporter): reporter_(reporter) {}
+Executor::Executor(ErrorReporter &reporter): reporter_(reporter), environment_(new Environment()) {}
 
 void Executor::VisitLiteral(const LiteralExpr &expr) {
   value_ = expr.value;
@@ -91,12 +91,12 @@ void Executor::VisitBinary(const BinaryExpr &expr) {
 }
 
 void Executor::VisitVariable(const VariableExpr &expr) {
-  value_ = environment_.Get(expr.name);
+  value_ = environment_->Get(expr.name);
 }
 
 void Executor::VisitAssign(const AssignExpr &expr) {
   auto value = EvaluateExpr(*expr.expr);
-  environment_.Assign(expr.name, value);
+  environment_->Assign(expr.name, value);
   value_ = value;
 }
 
@@ -114,7 +114,11 @@ void Executor::VisitVarStmt(const VarStmt &stmt) {
   if (stmt.init_expr) {
     value = EvaluateExpr(*stmt.init_expr);
   }
-  environment_.Define(stmt.name.lexeme(), value);
+  environment_->Define(stmt.name.lexeme(), value);
+}
+
+void Executor::VisitBlockStmt(const BlockStmt &stmt) {
+  ExecuteBlock(stmt.stmts, std::make_shared<Environment>(environment_));
 }
 
 void Executor::Execute(const std::vector<StmtPtr>& stmts) {
@@ -134,6 +138,13 @@ OptionalLiteral Executor::Execute(const ExprPtr &expr) {
     reporter_.set_error(error.token().line(), error.what());
   }
   return {};
+}
+
+void Executor::ExecuteBlock(const std::vector<StmtPtr> &stmts, std::shared_ptr<Environment> environment) {
+  auto previous = environment_;
+  environment_ = environment;
+  Execute(stmts);
+  environment_ = previous;
 }
 
 void Executor::EvaluateStmt(const Stmt& stmt) {

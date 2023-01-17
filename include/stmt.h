@@ -5,6 +5,7 @@
 #ifndef CCLOX_STMT_H
 #define CCLOX_STMT_H
 #include <memory>
+#include <vector>
 
 #include "common.h"
 #include "expr.h"
@@ -14,12 +15,14 @@ namespace cclox {
 struct ExpressionStmt;
 struct PrintStmt;
 struct VarStmt;
+struct BlockStmt;
 
 class StmtVisitor {
  public:
   virtual void VisitExpressionStmt(const ExpressionStmt& stmt) = 0;
   virtual void VisitPrintStmt(const PrintStmt& stmt) = 0;
   virtual void VisitVarStmt(const VarStmt& stmt) = 0;
+  virtual void VisitBlockStmt(const BlockStmt& stmt) = 0;
 };
 
 struct Stmt: public NonCopyable {
@@ -52,6 +55,16 @@ struct VarStmt: public Stmt {
 
   void Accept(StmtVisitor& visitor) const override {
     visitor.VisitVarStmt(*this);
+  }
+};
+
+struct BlockStmt: public Stmt {
+  std::vector<StmtPtr> stmts;
+
+  BlockStmt(std::vector<StmtPtr>&& sts): stmts(std::move(sts)) {}
+
+  void Accept(StmtVisitor& visitor) const override {
+    visitor.VisitBlockStmt(*this);
   }
 };
 
