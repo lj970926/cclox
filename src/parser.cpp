@@ -48,6 +48,10 @@ StmtPtr Parser::Statement() {
     return PrintStatement();
   }
 
+  if (Match({TokenType::WHILE})) {
+    return WhileStatement();
+  }
+
   if (Match({TokenType::LEFT_BRACE})) {
     return std::make_unique<BlockStmt>(Block());
   }
@@ -56,16 +60,25 @@ StmtPtr Parser::Statement() {
 }
 
 StmtPtr Parser::IfStatement() {
-    Consume(TokenType::LEFT_PAREN, "Expect '(' after if.");
-    ExprPtr condition = Expression();
-    Consume(TokenType::RIGHT_PAREN, "Expect ')' after if condition.");
-    StmtPtr then_branch = Statement();
-    StmtPtr else_branch = nullptr;
-    if (Match({TokenType::ELSE})) {
-      else_branch = Statement();
-    }
+  Consume(TokenType::LEFT_PAREN, "Expect '(' after if.");
+  ExprPtr condition = Expression();
+  Consume(TokenType::RIGHT_PAREN, "Expect ')' after if condition.");
+  StmtPtr then_branch = Statement();
+  StmtPtr else_branch = nullptr;
+  if (Match({TokenType::ELSE})) {
+    else_branch = Statement();
+  }
 
-    return std::make_unique<IfStmt>(std::move(condition), std::move(then_branch), std::move(else_branch));
+  return std::make_unique<IfStmt>(std::move(condition), std::move(then_branch), std::move(else_branch));
+}
+
+StmtPtr Parser::WhileStatement() {
+  Consume(TokenType::LEFT_PAREN, "Expect '(' after while.");
+  ExprPtr condition = Expression();
+  Consume(TokenType::RIGHT_PAREN, "Expect ')' after condition.");
+  StmtPtr stmt = Statement();
+
+  return std::make_unique<WhileStmt>(std::move(condition), std::move(stmt));
 }
 
 StmtPtr Parser::PrintStatement() {

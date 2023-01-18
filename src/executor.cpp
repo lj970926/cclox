@@ -147,6 +147,12 @@ void Executor::VisitIfStmt(const cclox::IfStmt &stmt) {
   }
 }
 
+void Executor::VisitWhileStmt(const WhileStmt &stmt) {
+  while (IsTruthy(EvaluateExpr(*stmt.condition))) {
+    EvaluateStmt(*stmt.stmt);
+  }
+}
+
 void Executor::Execute(const std::vector<StmtPtr>& stmts) {
   try {
     for (const auto& stmt: stmts) {
