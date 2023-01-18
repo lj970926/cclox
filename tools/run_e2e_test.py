@@ -1,10 +1,41 @@
 import argparse
 import os
 import subprocess
+import typing
+import re
+
+EXPECTED_OUPUT_PATTERN = re.compile(r"// expected: ?(.*)")
+EXPECTED_ERROR_PATTERN = re.compile(r"// (Error.*)")
+NON_TEST_PATTERN = re.compile(r"// nontest")
 
 sample_basedir = "sample"
 
-def run_test(test_path):
+class Test:
+    def __init__(self, expected_outputs=list()) -> None:
+        self.expected_ouputs = expected_outputs
+
+
+def run_test(test_path: str):
+    lines = list()
+    with open(test_path, "r", encoding="utf-8") as fp:
+        lines.extend(fp.readlines())
+    if not parse(lines):
+        return
+    
+    run(test_path, lines)
+
+def  parse(file_path, lines: typing.List[str]):
+    expected_outputs = list();
+    for line in lines:
+        match = NON_TEST_PATTERN.search(line)
+        if match:
+            print(f"Skip nontest file {file_path}")
+            return False
+        match = EXPECTED_OUPUT_PATTERN.search(line)
+        if match:
+            expected_outputs.append(match[1])
+
+def run(lines):
     pass
 
 def main(args):
