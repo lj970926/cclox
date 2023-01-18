@@ -44,19 +44,64 @@ StmtPtr Parser::Statement() {
   if (Match({TokenType::IF}))
     return IfStatement();
 
-  if (Match({TokenType::PRINT})) {
+  if (Match({TokenType::PRINT}))
     return PrintStatement();
-  }
 
-  if (Match({TokenType::WHILE})) {
+  if (Match({TokenType::WHILE}))
     return WhileStatement();
-  }
 
-  if (Match({TokenType::LEFT_BRACE})) {
+  if (Match({TokenType::FOR}))
+    return ForStatement();
+
+  if (Match({TokenType::LEFT_BRACE}))
     return std::make_unique<BlockStmt>(Block());
-  }
 
   return ExpressionStatement();
+}
+
+StmtPtr Parser::ForStatement() {
+  Consume(TokenType::LEFT_PAREN, "Expect '(' after for.");
+  StmtPtr init;
+
+  if (Match({TokenType::SEMICOLON})) {
+    init = nullptr;
+  } else if (Match({TokenType::VAR})) {
+    init = VarDeclaration();
+  } else {
+    init = ExpressionStatement();
+  }
+
+  ExprPtr cond = nullptr;
+  if (!Check(TokenType::SEMICOLON)) {
+    cond = Expression();
+  }
+  Consume(TokenType::SEMICOLON, "Expect ';' after loop condition.");
+
+  ExprPtr increment = nullptr;
+  if (!Check(TokenType::RIGHT_PAREN)) {
+    increment = Expression();
+  }
+  Consume(TokenType::RIGHT_PAREN, "Expect ')' after for clauses.");
+
+  StmtPtr body = Statement();
+  if (increment) {
+    std::vector<StmtPtr> vec;
+    vec.push_back(std::move(body));
+    vec.push_back(std::make_unique<ExpressionStmt>(std::move(increment)));
+    body = std::make_unique<BlockStmt>(std::move(vec));
+  }
+
+  if (!cond) cond = std::make_unique<LiteralExpr>("true");
+  body = std::make_unique<WhileStmt>(std::move(cond), std::move(body));
+
+  if (init) {
+    std::vector<StmtPtr> vec;
+    vec.push_back(std::move(init));
+    vec.push_back(std::move(body));
+    body = std::make_unique<BlockStmt>(std::move(vec));
+  }
+
+  return body;
 }
 
 StmtPtr Parser::IfStatement() {
