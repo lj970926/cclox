@@ -6,6 +6,7 @@
 #define CCLOX_EXPR_H
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "common.h"
 #include "token.h"
@@ -19,6 +20,7 @@ struct UnaryExpr;
 struct VariableExpr;
 struct AssignExpr;
 struct LogicExpr;
+struct CallExpr;
 
 class ExprVisitor {
  public:
@@ -31,6 +33,7 @@ class ExprVisitor {
   virtual void VisitVariable(const VariableExpr& var) = 0;
   virtual void VisitAssign(const AssignExpr& assign) = 0;
   virtual void VisitLogic(const LogicExpr& logic) = 0;
+  virtual void VisitCall(const CallExpr& call) = 0;
 };
 
 struct Expr: NonCopyable {
@@ -107,6 +110,19 @@ struct LogicExpr: public Expr {
 
   void Accept(ExprVisitor& visitor) const override {
     visitor.VisitLogic(*this);
+  }
+};
+
+struct CallExpr: public Expr {
+  ExprPtr callee;
+  Token paren;
+  std::vector<ExprPtr> arguments;
+
+  CallExpr(ExprPtr c, Token p, std::vector<ExprPtr>&& a)
+      : callee(std::move(c)), paren(p), arguments(std::move(a)) {}
+
+  void Accept(ExprVisitor& visitor) const override {
+    visitor.VisitCall(*this);
   }
 };
 

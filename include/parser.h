@@ -36,6 +36,7 @@ class Parser {
   ExprPtr Assignment();
   ExprPtr Or();
   ExprPtr And();
+  ExprPtr Call();
 
   StmtPtr Statement();
   StmtPtr PrintStatement();
@@ -58,6 +59,7 @@ class Parser {
   Token Consume(TokenType type, const std::string& message);
   ParseError Error(Token token, const std::string& message) const;
   void Synchronize();
+  ExprPtr FinishCall(ExprPtr callee);
 };
 } //namespace cclox
 

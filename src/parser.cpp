@@ -206,7 +206,20 @@ ExprPtr Parser::Unary() {
     return std::make_unique<UnaryExpr>(op, std::move(right));
   }
 
-  return Primary();
+  return Call();
+}
+
+ExprPtr Parser::Call() {
+  ExprPtr expr = Primary();
+
+  while (true) {
+    if (Match({TokenType::LEFT_PAREN})) {
+      expr = FinishCall(std::move(expr));
+    } else {
+      break ;
+    }
+  }
+  return expr;
 }
 
 ExprPtr Parser::Primary() {
@@ -342,4 +355,17 @@ void Parser::Synchronize() {
     Advance();
   }
 }
+
+ExprPtr Parser::FinishCall(ExprPtr callee) {
+  std::vector<ExprPtr> arguments;
+  if (!Check(TokenType::RIGHT_PAREN)) {
+    do {
+      arguments.push_back(Expression());
+    } while (Match({TokenType::COMMA}));
+  }
+
+  Token paren = Consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
+  return std::make_unique<CallExpr>(std::move(callee), paren, std::move(arguments));
+}
+
 } //namespace cclox
