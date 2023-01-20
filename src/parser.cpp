@@ -23,6 +23,7 @@ std::vector<StmtPtr> Parser::Parse() {
 StmtPtr Parser::Declaration() {
   try {
     if (Match({TokenType::VAR})) return VarDeclaration();
+    if (Match({TokenType::FUN})) return Function("function");
     return Statement();
   } catch (const ParseError& error) {
     Synchronize();
@@ -38,6 +39,26 @@ StmtPtr Parser::VarDeclaration() {
   }
   Consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
   return std::make_unique<VarStmt>(name, std::move(init_expr));
+}
+
+StmtPtr Parser::Function(const std::string &kind){
+  Token name = Consume(TokenType::IDENTIFIER, "Expect " + kind + " name.");
+  Consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
+  std::vector<Token> params;
+
+  if (!Check(TokenType::RIGHT_PAREN)) {
+    do {
+      if (params.size() >= 255)
+        Error(Peek(), "Can not have more than 255 parameters.");
+      Token param = Consume(TokenType::IDENTIFIER, "Expect parameter name.");
+      params.push_back(param);
+    } while (Match({TokenType::COMMA}));
+  }
+
+  Consume(TokenType::RIGHT_PAREN, "Expect ')' after parameters.");
+  Consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + " body.");
+  auto body = Block();
+  return std::make_unique<FunctionStmt>(name, params, std::move(body));
 }
 
 StmtPtr Parser::Statement() {

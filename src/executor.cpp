@@ -127,6 +127,18 @@ void Executor::VisitCall(const CallExpr& expr) {
     arguments.emplace_back(EvaluateExpr(*argument));
   }
 
+  if (!IS_FUNCTION(callee))
+    throw RuntimeError(expr.paren, "Can only call functions and classes.");
+
+  CallablePtr function = FUNC_VALUE(callee);
+  if (expr.arguments.size() != function->Arity()) {
+    throw RuntimeError(expr.paren, "Expected " +
+                                       std::to_string(function->Arity()) +
+                                       " arguments but got " +
+                                       std::to_string(arguments.size()) + ".");
+  }
+
+  value_ = function->Call(*this, arguments);
 }
 
 void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
