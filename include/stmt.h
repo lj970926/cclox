@@ -18,6 +18,7 @@ struct VarStmt;
 struct BlockStmt;
 struct IfStmt;
 struct WhileStmt;
+struct FunctionStmt;
 
 class StmtVisitor {
  public:
@@ -27,6 +28,7 @@ class StmtVisitor {
   virtual void VisitBlockStmt(const BlockStmt& stmt) = 0;
   virtual void VisitIfStmt(const IfStmt& stmt) = 0;
   virtual void VisitWhileStmt(const WhileStmt& stmt) = 0;
+  virtual void VisitFunctionStmt(const FunctionStmt& stmt) = 0;
 };
 
 struct Stmt: public NonCopyable {
@@ -92,6 +94,19 @@ struct WhileStmt: public Stmt {
 
   void Accept(StmtVisitor& visitor) const override {
     visitor.VisitWhileStmt(*this);
+  }
+};
+
+struct FunctionStmt: public Stmt {
+  Token name;
+  std::vector<Token> params;
+  std::vector<StmtPtr> body;
+
+  FunctionStmt(Token n, const std::vector<Token>& p, std::vector<StmtPtr>&& b)
+      : name(n), params(p), body(std::move(b)) {}
+
+  void Accept(StmtVisitor& visitor) const override {
+    visitor.VisitFunctionStmt(*this);
   }
 };
 

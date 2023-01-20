@@ -8,6 +8,7 @@
 #include <string>
 #include <optional>
 #include <variant>
+#include <memory>
 
 namespace cclox {
 enum class TokenType {
@@ -52,7 +53,9 @@ enum class TokenType {
   LOX_EOF
 };
 
-using Literal = std::variant<std::string, double>;
+class LoxCallable;
+using CallablePtr = std::shared_ptr<LoxCallable>;
+using Literal = std::variant<std::string, double, CallablePtr>;
 using OptionalLiteral = std::optional<Literal>;
 
 #define DOUBLE_VALUE(literal) (std::get<double>((literal).value()))

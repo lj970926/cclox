@@ -9,6 +9,7 @@
 
 #include "token.h"
 #include "executor.h"
+#include "stmt.h"
 
 namespace cclox {
 class LoxCallable {
@@ -18,7 +19,12 @@ class LoxCallable {
 };
 
 class LoxFunction: public LoxCallable {
-
+ public:
+  LoxFunction(const FunctionStmt& declaration);
+  OptionalLiteral Call(Executor& executor, const std::vector<OptionalLiteral>& arguments) override;
+  size_t Arity() override;
+ private:
+  const FunctionStmt& declaration_;
 };
 
 } //namespace cclox
