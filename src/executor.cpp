@@ -12,7 +12,7 @@
 #include "callable.h"
 
 namespace cclox {
-Executor::Executor(ErrorReporter &reporter): reporter_(reporter), environment_(new Environment()) {}
+Executor::Executor(ErrorReporter &reporter): reporter_(reporter), global_(new Environment()), environment_(global_) {}
 
 void Executor::VisitLiteral(const LiteralExpr &expr) {
   value_ = expr.value;
@@ -176,6 +176,13 @@ void Executor::VisitWhileStmt(const WhileStmt &stmt) {
   }
 }
 
+void Executor::VisitFunctionStmt(const FunctionStmt &stmt) {
+  auto function_stmt = std::make_unique<FunctionStmt>(stmt.name, stmt.params, std::move(const_cast<std::vector<StmtPtr>&>(stmt.body)));
+
+  CallablePtr function = std::make_shared<LoxFunction>(std::move(function_stmt));
+  environment_->Define(stmt.name.lexeme(), function);
+}
+
 void Executor::Execute(const std::vector<StmtPtr>& stmts) {
   try {
     for (const auto& stmt: stmts) {
@@ -195,7 +202,7 @@ OptionalLiteral Executor::Execute(const ExprPtr &expr) {
   return {};
 }
 
-void Executor::ExecuteBlock(const std::vector<StmtPtr> &stmts, std::shared_ptr<Environment> environment) {
+void Executor::ExecuteBlock(const std::vector<StmtPtr> &stmts, EnvironPtr environment) {
   auto previous = environment_;
   environment_ = environment;
   Execute(stmts);

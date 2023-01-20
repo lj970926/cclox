@@ -13,6 +13,10 @@
 #include "token.h"
 
 namespace cclox {
+
+class Environment;
+using EnvironPtr = std::shared_ptr<Environment>;
+
 class Environment: public NonCopyable {
  public:
 
@@ -24,7 +28,7 @@ class Environment: public NonCopyable {
   void Assign(Token name, OptionalLiteral value);
  private:
   std::unordered_map<std::string, OptionalLiteral> variables_;
-  std::shared_ptr<Environment> enclosing_;
+  EnvironPtr enclosing_;
 };
 } //namespace cclox
 

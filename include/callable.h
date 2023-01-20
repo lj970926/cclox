@@ -6,6 +6,7 @@
 #define CCLOX_CALLABLE_H
 
 #include <vector>
+#include <memory>
 
 #include "token.h"
 #include "executor.h"
@@ -20,11 +21,11 @@ class LoxCallable {
 
 class LoxFunction: public LoxCallable {
  public:
-  LoxFunction(const FunctionStmt& declaration);
+  LoxFunction(std::unique_ptr<FunctionStmt> declaration);
   OptionalLiteral Call(Executor& executor, const std::vector<OptionalLiteral>& arguments) override;
   size_t Arity() override;
  private:
-  const FunctionStmt& declaration_;
+  std::unique_ptr<FunctionStmt> declaration_;
 };
 
 } //namespace cclox

@@ -7,7 +7,7 @@
 
 namespace cclox {
 
-Environment::Environment(std::shared_ptr<Environment> enclosing): enclosing_(enclosing) {}
+Environment::Environment(EnvironPtr enclosing): enclosing_(enclosing) {}
 
 void Environment::Define(const std::string &name, OptionalLiteral value) {
   variables_.emplace(name, value);

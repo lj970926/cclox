@@ -6,14 +6,22 @@
 
 #include <optional>
 
+#include "environment.h"
+
 namespace cclox {
-LoxFunction::LoxFunction(const FunctionStmt &declaration): declaration_(declaration){}
+LoxFunction::LoxFunction(std::unique_ptr<FunctionStmt> declaration): declaration_(std::move(declaration)){}
 
 OptionalLiteral LoxFunction::Call(Executor &executor, const std::vector<OptionalLiteral> &arguments) {
+  EnvironPtr environ = std::make_shared<Environment>(executor.global_environment());
+
+  for (int i = 0; i < declaration_->params.size(); ++i) {
+    environ->Define(declaration_->params[i].lexeme(), arguments[i]);
+  }
+  executor.ExecuteBlock(declaration_->body, environ);
   return std::nullopt;
 }
 
 size_t LoxFunction::Arity() {
-  return declaration_.params.size();
+  return declaration_->params.size();
 }
 } //namespace cclox

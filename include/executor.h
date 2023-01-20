@@ -38,10 +38,13 @@ class Executor: public ExprVisitor, public StmtVisitor{
   void Execute(const std::vector<StmtPtr>& stmts);
   OptionalLiteral Execute(const ExprPtr& expr);
   void ExecuteBlock(const std::vector<StmtPtr>& stmts, std::shared_ptr<Environment> environment);
+  EnvironPtr global_environment() { return global_; }
  private:
   OptionalLiteral value_;
   ErrorReporter& reporter_;
-  std::shared_ptr<Environment> environment_;
+
+  EnvironPtr global_;
+  EnvironPtr environment_;
 
   OptionalLiteral EvaluateExpr(const Expr& expr);
   void EvaluateStmt(const Stmt& stmt);
