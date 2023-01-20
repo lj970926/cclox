@@ -47,6 +47,7 @@ class Parser {
   StmtPtr WhileStatement();
   StmtPtr ForStatement();
   StmtPtr Function(const std::string& kind);
+  StmtPtr ReturnStatement();
 
   std::vector<StmtPtr> Block();
 

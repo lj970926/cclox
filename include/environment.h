@@ -21,7 +21,7 @@ class Environment: public NonCopyable {
  public:
 
   Environment() = default;
-  Environment(std::shared_ptr<Environment> enclosing);
+  explicit Environment(std::shared_ptr<Environment> enclosing);
 
   void Define(const std::string& name, OptionalLiteral value);
   OptionalLiteral Get(Token name);

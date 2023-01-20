@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "environment.h"
+#include "return.h"
 
 namespace cclox {
 LoxFunction::LoxFunction(std::unique_ptr<FunctionStmt> declaration): declaration_(std::move(declaration)){}
@@ -17,7 +18,13 @@ OptionalLiteral LoxFunction::Call(Executor &executor, const std::vector<Optional
   for (int i = 0; i < declaration_->params.size(); ++i) {
     environ->Define(declaration_->params[i].lexeme(), arguments[i]);
   }
-  executor.ExecuteBlock(declaration_->body, environ);
+
+  try {
+    executor.ExecuteBlock(declaration_->body, environ);
+  } catch (const Return& ret) {
+    return ret.value();
+  }
+
   return std::nullopt;
 }
 

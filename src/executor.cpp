@@ -10,6 +10,7 @@
 
 #include "error.h"
 #include "callable.h"
+#include "return.h"
 
 namespace cclox {
 Executor::Executor(ErrorReporter &reporter): reporter_(reporter), global_(new Environment()), environment_(global_) {}
@@ -181,6 +182,14 @@ void Executor::VisitFunctionStmt(const FunctionStmt &stmt) {
 
   CallablePtr function = std::make_shared<LoxFunction>(std::move(function_stmt));
   environment_->Define(stmt.name.lexeme(), function);
+}
+
+void Executor::VisitReturnStmt(const cclox::ReturnStmt &stmt) {
+  OptionalLiteral value = std::nullopt;
+  if (stmt.expr) {
+    value = EvaluateExpr(*stmt.expr);
+  }
+  throw Return(value);
 }
 
 void Executor::Execute(const std::vector<StmtPtr>& stmts) {

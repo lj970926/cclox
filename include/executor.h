@@ -34,6 +34,7 @@ class Executor: public ExprVisitor, public StmtVisitor{
   void VisitIfStmt(const IfStmt& stmt) override;
   void VisitWhileStmt(const WhileStmt& stmt) override;
   void VisitFunctionStmt(const FunctionStmt& stmt) override;
+  void VisitReturnStmt(const ReturnStmt& stmt) override;
 
   void Execute(const std::vector<StmtPtr>& stmts);
   OptionalLiteral Execute(const ExprPtr& expr);
