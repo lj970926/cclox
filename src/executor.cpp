@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "error.h"
-#include "common.h"
+#include "callable.h"
 
 namespace cclox {
 Executor::Executor(ErrorReporter &reporter): reporter_(reporter), environment_(new Environment()) {}
@@ -116,6 +116,17 @@ void Executor::VisitLogic(const cclox::LogicExpr &expr) {
   }
 
   value_ = EvaluateExpr(*expr.right);
+}
+
+void Executor::VisitCall(const CallExpr& expr) {
+  auto callee = EvaluateExpr(*expr.callee);
+
+  std::vector<OptionalLiteral> arguments;
+
+  for (const auto& argument: expr.arguments) {
+    arguments.emplace_back(EvaluateExpr(*argument));
+  }
+
 }
 
 void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {

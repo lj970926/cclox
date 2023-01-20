@@ -360,6 +360,9 @@ ExprPtr Parser::FinishCall(ExprPtr callee) {
   std::vector<ExprPtr> arguments;
   if (!Check(TokenType::RIGHT_PAREN)) {
     do {
+      if (arguments.size() >= 255)
+        Error(Peek(), "Can't have more than 255 arguments.");
+
       arguments.push_back(Expression());
     } while (Match({TokenType::COMMA}));
   }
