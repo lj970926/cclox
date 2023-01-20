@@ -180,7 +180,7 @@ void Executor::VisitWhileStmt(const WhileStmt &stmt) {
 void Executor::VisitFunctionStmt(const FunctionStmt &stmt) {
   auto function_stmt = std::make_unique<FunctionStmt>(stmt.name, stmt.params, std::move(const_cast<std::vector<StmtPtr>&>(stmt.body)));
 
-  CallablePtr function = std::make_shared<LoxFunction>(std::move(function_stmt));
+  CallablePtr function = std::make_shared<LoxFunction>(std::move(function_stmt), environment_);
   environment_->Define(stmt.name.lexeme(), function);
 }
 

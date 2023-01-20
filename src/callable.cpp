@@ -10,13 +10,15 @@
 #include "return.h"
 
 namespace cclox {
-LoxFunction::LoxFunction(std::unique_ptr<FunctionStmt> declaration): declaration_(std::move(declaration)){}
+LoxFunction::LoxFunction(std::unique_ptr<FunctionStmt> declaration,
+                         EnvironPtr closure)
+    : declaration_(std::move(declaration)), closure_(closure){}
 
 OptionalLiteral LoxFunction::Call(Executor &executor, const std::vector<OptionalLiteral> &arguments) {
-  EnvironPtr environ = std::make_shared<Environment>(executor.global_environment());
+  EnvironPtr env = std::make_shared<Environment>(closure_);
 
   for (int i = 0; i < declaration_->params.size(); ++i) {
-    environ->Define(declaration_->params[i].lexeme(), arguments[i]);
+    env->Define(declaration_->params[i].lexeme(), arguments[i]);
   }
 
   try {

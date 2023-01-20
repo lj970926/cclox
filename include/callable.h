@@ -21,11 +21,12 @@ class LoxCallable {
 
 class LoxFunction: public LoxCallable {
  public:
-  LoxFunction(std::unique_ptr<FunctionStmt> declaration);
+  LoxFunction(std::unique_ptr<FunctionStmt> declaration, EnvironPtr closure);
   OptionalLiteral Call(Executor& executor, const std::vector<OptionalLiteral>& arguments) override;
   size_t Arity() override;
  private:
   std::unique_ptr<FunctionStmt> declaration_;
+  EnvironPtr closure_;
 };
 
 } //namespace cclox
