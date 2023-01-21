@@ -11,6 +11,7 @@
 #include "error.h"
 #include "callable.h"
 #include "return.h"
+#include "common.h"
 
 namespace cclox {
 Executor::Executor(ErrorReporter &reporter): reporter_(reporter), global_(new Environment()), environment_(global_) {}
@@ -212,10 +213,9 @@ OptionalLiteral Executor::Execute(const ExprPtr &expr) {
 }
 
 void Executor::ExecuteBlock(const std::vector<StmtPtr> &stmts, EnvironPtr environment) {
-  auto previous = environment_;
+  VariableRestorer restorer(environment_);
   environment_ = environment;
   Execute(stmts);
-  environment_ = previous;
 }
 
 void Executor::EvaluateStmt(const Stmt& stmt) {

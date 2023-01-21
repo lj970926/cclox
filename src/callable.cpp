@@ -22,7 +22,7 @@ OptionalLiteral LoxFunction::Call(Executor &executor, const std::vector<Optional
   }
 
   try {
-    executor.ExecuteBlock(declaration_->body, environ);
+    executor.ExecuteBlock(declaration_->body, env);
   } catch (const Return& ret) {
     return ret.value();
   }
