@@ -24,12 +24,64 @@ void Resolver::VisitFunctionStmt(const FunctionStmt &stmt) {
   ResolveFunction(stmt);
 }
 
+void Resolver::VisitExpressionStmt(const ExpressionStmt &stmt) {
+  Resolve(*stmt.expr);
+}
+
+void Resolver::VisitIfStmt(const IfStmt &stmt) {
+  Resolve(*stmt.condition);
+  Resolve(*stmt.then_branch);
+  if (stmt.else_branch)
+    Resolve(*stmt.else_branch);
+}
+
+void Resolver::VisitPrintStmt(const PrintStmt &stmt) {
+  Resolve(*stmt.expr);
+}
+
+void Resolver::VisitReturnStmt(const ReturnStmt &stmt) {
+  if (stmt.expr) {
+    Resolve(*stmt.expr);
+  }
+}
+
+void Resolver::VisitWhileStmt(const WhileStmt &stmt) {
+  Resolve(*stmt.condition);
+  Resolve(*stmt.stmt);
+}
+
 void Resolver::VisitVariable(const VariableExpr &expr) {
   if (InInitializer(expr.name.lexeme())) {
     reporter_.set_error(expr.name, "Can't read local variable in its own initializer.");
   }
 
   ResolveLocal(expr, expr.name);
+}
+
+void Resolver::VisitBinary(const BinaryExpr &expr) {
+  Resolve(*expr.left);
+  Resolve(*expr.right);
+}
+
+void Resolver::VisitCall(const CallExpr &expr) {
+  for (const auto& argument: expr.arguments) {
+    Resolve(*argument);
+  }
+}
+
+void Resolver::VisitGrouping(const GroupingExpr &expr) {
+  Resolve(*expr.expr);
+}
+
+void Resolver::VisitLiteral(const LiteralExpr &expr) {}
+
+void Resolver::VisitLogic(const LogicExpr &expr) {
+  Resolve(*expr.left);
+  Resolve(*expr.right);
+}
+
+void Resolver::VisitUnary(const UnaryExpr &expr) {
+  Resolve(*expr.right);
 }
 
 void Resolver::Resolve(const Stmt &stmt) {

@@ -26,8 +26,19 @@ class Resolver: public ExprVisitor, public StmtVisitor {
   void VisitBlockStmt(const BlockStmt& stmt) override;
   void VisitVarStmt(const VarStmt& stmt) override;
   void VisitFunctionStmt(const FunctionStmt& stmt) override;
+  void VisitExpressionStmt(const ExpressionStmt& stmt) override;
+  void VisitIfStmt(const IfStmt& stmt) override;
+  void VisitPrintStmt(const PrintStmt& stmt) override;
+  void VisitReturnStmt(const ReturnStmt& stmt) override;
+  void VisitWhileStmt(const WhileStmt& stmt) override;
 
   void VisitVariable(const VariableExpr& expr) override;
+  void VisitBinary(const BinaryExpr& expr) override;
+  void VisitCall(const CallExpr& expr) override;
+  void VisitGrouping(const GroupingExpr& expr) override;
+  void VisitLiteral(const LiteralExpr& expr) override;
+  void VisitLogic(const LogicExpr& expr) override;
+  void VisitUnary(const UnaryExpr& expr) override;
 
  private:
   void BeginScope();
