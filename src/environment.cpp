@@ -25,6 +25,10 @@ OptionalLiteral Environment::Get(Token name) {
   throw RuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
 }
 
+OptionalLiteral Environment::GetAt(size_t distance, const std::string &name) {
+  return Ancestor(distance)->variables_.at(name);
+}
+
 void Environment::Assign(Token name, OptionalLiteral value) {
   if (variables_.find(name.lexeme()) != variables_.end()) {
     variables_[name.lexeme()] = value;
@@ -37,6 +41,18 @@ void Environment::Assign(Token name, OptionalLiteral value) {
   }
 
   throw RuntimeError(name, "Undefined variable '" + name.lexeme() + "'.");
+}
+
+void Environment::AssignAt(size_t distance, Token name, OptionalLiteral value) {
+  Ancestor(distance)->variables_[name.lexeme()] = value;
+}
+
+EnvironPtr Environment::Ancestor(size_t distance) {
+  EnvironPtr env = std::shared_ptr<Environment>(this);
+  for (size_t i = 0; i < distance; ++i) {
+    env = env->enclosing_;
+  }
+  return env;
 }
 
 } //namespace cclox

@@ -25,10 +25,15 @@ class Environment: public NonCopyable {
 
   void Define(const std::string& name, OptionalLiteral value);
   OptionalLiteral Get(Token name);
+  OptionalLiteral GetAt(size_t distance, const std::string& name);
   void Assign(Token name, OptionalLiteral value);
+  void AssignAt(size_t distance, Token name, OptionalLiteral value);
+
  private:
   std::unordered_map<std::string, OptionalLiteral> variables_;
   EnvironPtr enclosing_;
+
+  EnvironPtr Ancestor(size_t distance);
 };
 } //namespace cclox
 

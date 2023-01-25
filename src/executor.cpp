@@ -93,12 +93,17 @@ void Executor::VisitBinary(const BinaryExpr &expr) {
 }
 
 void Executor::VisitVariable(const VariableExpr &expr) {
-  value_ = environment_->Get(expr.name);
+  value_ = LookUpVariable(expr.name, expr);
 }
 
 void Executor::VisitAssign(const AssignExpr &expr) {
   auto value = EvaluateExpr(*expr.expr);
-  environment_->Assign(expr.name, value);
+  if (locals_.contains(&expr)) {
+    size_t distance = locals_.at(&expr);
+    environment_->AssignAt(distance, expr.name, value);
+  } else {
+    global_->Assign(expr.name, value);
+  }
   value_ = value;
 }
 
@@ -247,5 +252,18 @@ void Executor::CheckNumberOperand(Token op, const std::initializer_list<Optional
     if (!IS_DOUBLE(value))
       throw RuntimeError(op, "Operand must be a number.");
   }
+}
+
+void Executor::Resolve(const Expr *expr, size_t depth) {
+  locals_.emplace(expr, depth);
+}
+
+OptionalLiteral Executor::LookUpVariable(Token name, const Expr &expr) {
+  if (locals_.contains(&expr)) {
+    size_t distance = locals_.at(&expr);
+    return environment_->GetAt(distance, name.lexeme());
+  }
+
+  return global_->Get(name);
 }
 } //namespace cclox

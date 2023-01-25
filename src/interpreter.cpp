@@ -13,6 +13,7 @@
 #include "scanner.h"
 #include "parser.h"
 #include "executor.h"
+#include "resolver.h"
 
 namespace cclox {
 void Interpreter::RunFile(const std::string &path) {
@@ -56,6 +57,9 @@ void Interpreter::Run(const std::string &source) {
     had_error_ = true;
     return ;
   }
+
+  Resolver resolver(executor_, reporter_);
+  resolver.Resolve(statements);
 
   executor_ .Execute(statements);
 

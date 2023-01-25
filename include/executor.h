@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 #include "expr.h"
 #include "token.h"
@@ -40,6 +41,8 @@ class Executor: public ExprVisitor, public StmtVisitor{
   OptionalLiteral Execute(const ExprPtr& expr);
   void ExecuteBlock(const std::vector<StmtPtr>& stmts, std::shared_ptr<Environment> environment);
   EnvironPtr global_environment() { return global_; }
+
+  void Resolve(const Expr* expr, size_t depth);
  private:
   OptionalLiteral value_;
   ErrorReporter& reporter_;
@@ -47,11 +50,14 @@ class Executor: public ExprVisitor, public StmtVisitor{
   EnvironPtr global_;
   EnvironPtr environment_;
 
+  std::unordered_map<const Expr*, size_t> locals_;
+
   OptionalLiteral EvaluateExpr(const Expr& expr);
   void EvaluateStmt(const Stmt& stmt);
   bool IsTruthy(OptionalLiteral value) const;
   bool IsEqual(OptionalLiteral lhs, OptionalLiteral rhs) const;
   void CheckNumberOperand(Token op, const std::initializer_list<OptionalLiteral>& values) const;
+  OptionalLiteral LookUpVariable(Token name, const Expr& expr);
 };
 } //namespace cclox
 

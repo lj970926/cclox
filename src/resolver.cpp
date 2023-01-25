@@ -84,6 +84,11 @@ void Resolver::VisitUnary(const UnaryExpr &expr) {
   Resolve(*expr.right);
 }
 
+void Resolver::VisitAssign(const AssignExpr &expr) {
+  Resolve(*expr.expr);
+  ResolveLocal(expr, expr.name);
+}
+
 void Resolver::Resolve(const Stmt &stmt) {
   stmt.Accept(*this);
 }
@@ -109,23 +114,33 @@ void Resolver::ResolveFunction(const FunctionStmt &stmt) {
   EndScope();
 }
 
+void Resolver::ResolveLocal(const Expr &expr, Token name) {
+  if (scopes_.empty()) return ;
+  for (int i = scopes_.size() - 1; i >= 0; --i) {
+    if (scopes_[i].contains(name.lexeme())) {
+      executor_.Resolve(&expr, scopes_.size() - 1 - i);
+      return ;
+    }
+  }
+}
+
 void Resolver::BeginScope() {
-  scopes_.emplace();
+  scopes_.emplace_back();
 }
 
 void Resolver::EndScope() {
-  scopes_.pop();
+  scopes_.pop_back();
 }
 
 void Resolver::Declare(Token name) {
   if (scopes_.empty()) return ;
-  auto& scope = scopes_.top();
+  auto& scope = scopes_.back();
   scope.emplace(name.lexeme(), false);
 }
 
 void Resolver::Define(Token name) {
   if (scopes_.empty()) return ;
-  auto& scope = scopes_.top();
+  auto& scope = scopes_.back();
   scope.emplace(name.lexeme(), true);
 }
 }

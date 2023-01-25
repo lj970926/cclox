@@ -39,11 +39,13 @@ class Resolver: public ExprVisitor, public StmtVisitor {
   void VisitLiteral(const LiteralExpr& expr) override;
   void VisitLogic(const LogicExpr& expr) override;
   void VisitUnary(const UnaryExpr& expr) override;
+  void VisitAssign(const AssignExpr& expr) override;
+
+  void Resolve(const std::vector<StmtPtr>& stmts);
 
  private:
   void BeginScope();
   void EndScope();
-  void Resolve(const std::vector<StmtPtr>& stmts);
   void Resolve(const Expr& expr);
   void Resolve(const Stmt& stmt);
   void ResolveFunction(const FunctionStmt& stmt);
@@ -55,11 +57,11 @@ class Resolver: public ExprVisitor, public StmtVisitor {
   bool InInitializer(const std::string& name) const {
     if (scopes_.empty())
       return false;
-    auto& scope = scopes_.top();
+    auto& scope = scopes_.back();
     return scope.contains(name) && !scope.at(name);
   }
 
-  std::stack<std::unordered_map<std::string, bool>> scopes_;
+  std::vector<std::unordered_map<std::string, bool>> scopes_;
   Executor& executor_;
   ErrorReporter& reporter_;
 };
