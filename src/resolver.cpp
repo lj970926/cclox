@@ -2,6 +2,7 @@
 // Created by lijin on 23-1-24.
 //
 #include "resolver.h"
+#include "common.h"
 
 namespace cclox {
 void Resolver::VisitBlockStmt(const BlockStmt &stmt) {
@@ -21,7 +22,7 @@ void Resolver::VisitVarStmt(const VarStmt &stmt) {
 void Resolver::VisitFunctionStmt(const FunctionStmt &stmt) {
   Declare(stmt.name);
   Define(stmt.name);
-  ResolveFunction(stmt);
+  ResolveFunction(stmt, FunctionType::FUNCTION);
 }
 
 void Resolver::VisitExpressionStmt(const ExpressionStmt &stmt) {
@@ -40,6 +41,9 @@ void Resolver::VisitPrintStmt(const PrintStmt &stmt) {
 }
 
 void Resolver::VisitReturnStmt(const ReturnStmt &stmt) {
+  if (current_function_ == FunctionType::NONE) {
+    reporter_.set_error(stmt.keyword, "Can't return from top-level code.");
+  }
   if (stmt.expr) {
     Resolve(*stmt.expr);
   }
@@ -103,7 +107,10 @@ void Resolver::Resolve(const std::vector<StmtPtr> &stmts) {
   }
 }
 
-void Resolver::ResolveFunction(const FunctionStmt &stmt) {
+void Resolver::ResolveFunction(const FunctionStmt &stmt, FunctionType type) {
+  VariableRestorer restorer(current_function_);
+  current_function_ = FunctionType::FUNCTION;
+
   BeginScope();
   for (Token param: stmt.params) {
     Declare(param);
@@ -135,6 +142,9 @@ void Resolver::EndScope() {
 void Resolver::Declare(Token name) {
   if (scopes_.empty()) return ;
   auto& scope = scopes_.back();
+  if (scope.contains(name.lexeme())) {
+    reporter_.set_error(name, "Already a variable with this name in this scope.");
+  }
   scope.emplace(name.lexeme(), false);
 }
 

@@ -20,6 +20,11 @@ namespace cclox {
 class Resolver: public ExprVisitor, public StmtVisitor {
  public:
 
+  enum class FunctionType {
+    NONE,
+    FUNCTION
+  };
+
   Resolver(Executor& executor, ErrorReporter& reporter)
       : executor_(executor), reporter_(reporter) {};
 
@@ -48,7 +53,7 @@ class Resolver: public ExprVisitor, public StmtVisitor {
   void EndScope();
   void Resolve(const Expr& expr);
   void Resolve(const Stmt& stmt);
-  void ResolveFunction(const FunctionStmt& stmt);
+  void ResolveFunction(const FunctionStmt& stmt, FunctionType type);
   void ResolveLocal(const Expr& expr, Token name);
 
   void Declare(Token name);
@@ -64,6 +69,7 @@ class Resolver: public ExprVisitor, public StmtVisitor {
   std::vector<std::unordered_map<std::string, bool>> scopes_;
   Executor& executor_;
   ErrorReporter& reporter_;
+  FunctionType current_function_ = FunctionType::NONE;
 };
 } //namespace cclox
 

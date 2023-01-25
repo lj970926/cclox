@@ -61,6 +61,12 @@ void Interpreter::Run(const std::string &source) {
   Resolver resolver(executor_, reporter_);
   resolver.Resolve(statements);
 
+  if (reporter_.status() != LoxStatus::OK) {
+    reporter_.Print();
+    had_error_ = true;
+    return ;
+  }
+
   executor_ .Execute(statements);
 
   if (reporter_.status() != LoxStatus::OK) {
