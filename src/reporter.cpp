@@ -12,6 +12,16 @@ void ErrorReporter::set_error(size_t line, const std::string &message) {
   status_ = LoxStatus::ERROR;
 }
 
+void ErrorReporter::set_error(Token token, const std::string &message) {
+  std::string error_msg;
+  if (token.type() == TokenType::LOX_EOF) {
+    error_msg = "at end, " + message;
+  } else {
+    error_msg = "at '" + token.lexeme() + "', " + message;
+  }
+  set_error(token.line(), error_msg);
+}
+
 LoxStatus ErrorReporter::status() const { return status_; }
 
 void ErrorReporter::clear() {

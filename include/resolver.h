@@ -6,20 +6,51 @@
 #define CCLOX_RESOLVER_H
 
 #include <vector>
+#include <stack>
+#include <unordered_map>
+#include <string>
 
+#include "token.h"
 #include "expr.h"
 #include "stmt.h"
+#include "executor.h"
+#include "reporter.h"
 
 namespace cclox {
 class Resolver: public ExprVisitor, public StmtVisitor {
  public:
+
+  Resolver(Executor& executor, ErrorReporter& reporter)
+      : executor_(executor), reporter_(reporter) {};
+
   void VisitBlockStmt(const BlockStmt& stmt) override;
+  void VisitVarStmt(const VarStmt& stmt) override;
+  void VisitFunctionStmt(const FunctionStmt& stmt) override;
+
+  void VisitVariable(const VariableExpr& expr) override;
+
  private:
   void BeginScope();
   void EndScope();
   void Resolve(const std::vector<StmtPtr>& stmts);
   void Resolve(const Expr& expr);
   void Resolve(const Stmt& stmt);
+  void ResolveFunction(const FunctionStmt& stmt);
+  void ResolveLocal(const Expr& expr, Token name);
+
+  void Declare(Token name);
+  void Define(Token name);
+
+  bool InInitializer(const std::string& name) const {
+    if (scopes_.empty())
+      return false;
+    auto& scope = scopes_.top();
+    return scope.contains(name) && !scope.at(name);
+  }
+
+  std::stack<std::unordered_map<std::string, bool>> scopes_;
+  Executor& executor_;
+  ErrorReporter& reporter_;
 };
 } //namespace cclox
 

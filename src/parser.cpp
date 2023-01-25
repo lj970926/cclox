@@ -357,14 +357,7 @@ Token Parser::Consume(TokenType type, const std::string &message) {
 }
 
 ParseError Parser::Error(cclox::Token token, const std::string &message) const {
-  std::string error_msg;
-  if (token.type() == TokenType::LOX_EOF) {
-    error_msg = "at end, " + message;
-  } else {
-    error_msg = "at '" + token.lexeme() + "', " + message;
-  }
-
-  reporter_.set_error(token.line(), error_msg);
+  reporter_.set_error(token, message);
   return {};
 }
 

@@ -7,6 +7,8 @@
 #include <vector>
 #include <string>
 
+#include "token.h"
+
 namespace cclox {
 
 enum class LoxStatus {
@@ -17,6 +19,7 @@ enum class LoxStatus {
 class ErrorReporter {
  public:
   void set_error(size_t line, const std::string& message);
+  void set_error(Token token, const std::string& message);
   LoxStatus status() const;
   void Print() const;
   void clear();
