@@ -33,7 +33,7 @@ class Environment: public NonCopyable {
   std::unordered_map<std::string, OptionalLiteral> variables_;
   EnvironPtr enclosing_;
 
-  EnvironPtr Ancestor(size_t distance);
+  Environment* Ancestor(size_t distance);
 };
 } //namespace cclox
 

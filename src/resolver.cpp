@@ -1,8 +1,8 @@
 //
 // Created by lijin on 23-1-24.
 //
+
 #include "resolver.h"
-#include "common.h"
 
 namespace cclox {
 void Resolver::VisitBlockStmt(const BlockStmt &stmt) {
@@ -68,6 +68,7 @@ void Resolver::VisitBinary(const BinaryExpr &expr) {
 }
 
 void Resolver::VisitCall(const CallExpr &expr) {
+  Resolve(*expr.callee);
   for (const auto& argument: expr.arguments) {
     Resolve(*argument);
   }
@@ -109,7 +110,7 @@ void Resolver::Resolve(const std::vector<StmtPtr> &stmts) {
 
 void Resolver::ResolveFunction(const FunctionStmt &stmt, FunctionType type) {
   VariableRestorer restorer(current_function_);
-  current_function_ = FunctionType::FUNCTION;
+  current_function_ = type;
 
   BeginScope();
   for (Token param: stmt.params) {
@@ -145,12 +146,12 @@ void Resolver::Declare(Token name) {
   if (scope.contains(name.lexeme())) {
     reporter_.set_error(name, "Already a variable with this name in this scope.");
   }
-  scope.emplace(name.lexeme(), false);
+  scope[name.lexeme()] = false;
 }
 
 void Resolver::Define(Token name) {
   if (scopes_.empty()) return ;
   auto& scope = scopes_.back();
-  scope.emplace(name.lexeme(), true);
+  scope[name.lexeme()] = true;
 }
 }

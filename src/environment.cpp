@@ -47,10 +47,10 @@ void Environment::AssignAt(size_t distance, Token name, OptionalLiteral value) {
   Ancestor(distance)->variables_[name.lexeme()] = value;
 }
 
-EnvironPtr Environment::Ancestor(size_t distance) {
-  EnvironPtr env = std::shared_ptr<Environment>(this);
+Environment *Environment::Ancestor(size_t distance) {
+  Environment* env = this;
   for (size_t i = 0; i < distance; ++i) {
-    env = env->enclosing_;
+    env = env->enclosing_.get();
   }
   return env;
 }
