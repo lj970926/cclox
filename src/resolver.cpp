@@ -54,6 +54,11 @@ void Resolver::VisitWhileStmt(const WhileStmt &stmt) {
   Resolve(*stmt.stmt);
 }
 
+void Resolver::VisitClassStmt(const ClassStmt &stmt) {
+  Declare(stmt.name);
+  Define(stmt.name);
+}
+
 void Resolver::VisitVariable(const VariableExpr &expr) {
   if (InInitializer(expr.name.lexeme())) {
     reporter_.set_error(expr.name, "Can't read local variable in its own initializer.");

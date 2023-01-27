@@ -36,6 +36,7 @@ class Resolver: public ExprVisitor, public StmtVisitor {
   void VisitPrintStmt(const PrintStmt& stmt) override;
   void VisitReturnStmt(const ReturnStmt& stmt) override;
   void VisitWhileStmt(const WhileStmt& stmt) override;
+  void VisitClassStmt(const ClassStmt& stmt) override;
 
   void VisitVariable(const VariableExpr& expr) override;
   void VisitBinary(const BinaryExpr& expr) override;
