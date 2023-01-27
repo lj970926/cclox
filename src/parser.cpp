@@ -24,6 +24,7 @@ StmtPtr Parser::Declaration() {
   try {
     if (Match({TokenType::VAR})) return VarDeclaration();
     if (Match({TokenType::FUN})) return Function("function");
+    if (Match({TokenType::CLASS})) return ClassDeclaration();
     return Statement();
   } catch (const ParseError& error) {
     Synchronize();
@@ -39,6 +40,19 @@ StmtPtr Parser::VarDeclaration() {
   }
   Consume(TokenType::SEMICOLON, "Expect ';' after variable declaration.");
   return std::make_unique<VarStmt>(name, std::move(init_expr));
+}
+
+StmtPtr Parser::ClassDeclaration() {
+  Token name = Consume(TokenType::IDENTIFIER, "Expect class name.");
+  Consume(TokenType::LEFT_BRACE, "Expect '{' before class body.");
+
+  std::vector<StmtPtr> methods;
+  while (!End() && !Check(TokenType::RIGHT_BRACE)) {
+    methods.push_back(std::move(Function("method")));
+  }
+
+  Consume(TokenType::RIGHT_BRACE, "Expect '}' after class body.");
+  return std::make_unique<ClassStmt>(name, std::move(methods));
 }
 
 StmtPtr Parser::Function(const std::string &kind){

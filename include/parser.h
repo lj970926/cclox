@@ -43,6 +43,7 @@ class Parser {
   StmtPtr ExpressionStatement();
   StmtPtr Declaration();
   StmtPtr VarDeclaration();
+  StmtPtr ClassDeclaration();
   StmtPtr IfStatement();
   StmtPtr WhileStatement();
   StmtPtr ForStatement();

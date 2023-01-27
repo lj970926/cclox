@@ -20,6 +20,7 @@ struct IfStmt;
 struct WhileStmt;
 struct FunctionStmt;
 struct ReturnStmt;
+struct ClassStmt;
 
 class StmtVisitor {
  public:
@@ -31,6 +32,7 @@ class StmtVisitor {
   virtual void VisitWhileStmt(const WhileStmt& stmt) = 0;
   virtual void VisitFunctionStmt(const FunctionStmt& stmt) = 0;
   virtual void VisitReturnStmt(const ReturnStmt& stmt) = 0;
+  virtual void VisitClassStmt(const ClassStmt& stmt) = 0;
 };
 
 struct Stmt: public NonCopyable {
@@ -119,6 +121,18 @@ struct ReturnStmt: public Stmt {
 
   void Accept(StmtVisitor& visitor) const override {
     visitor.VisitReturnStmt(*this);
+  }
+};
+
+struct ClassStmt: public Stmt {
+  Token name;
+  std::vector<StmtPtr> methods;
+
+  ClassStmt(Token n, std::vector<StmtPtr>&& m)
+      : name(n), methods(std::move(m)) {}
+
+  void Accept(StmtVisitor& visitor) const override {
+    visitor.VisitClassStmt(*this);
   }
 };
 
