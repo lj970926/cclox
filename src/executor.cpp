@@ -136,10 +136,10 @@ void Executor::VisitCall(const CallExpr& expr) {
     arguments.emplace_back(EvaluateExpr(*argument));
   }
 
-  if (!IS_FUNCTION(callee) && !IS_CLASS(callee))
+  if (!IS_CALLABLE(callee))
     throw RuntimeError(expr.paren, "Can only call functions and classes.");
 
-  CallablePtr function = IS_FUNCTION(callee) ? FUNC_VALUE(callee) : CLASS_VALUE(callee);
+  CallablePtr function = CALLABLE_VALUE(callee);
   if (expr.arguments.size() != function->Arity()) {
     throw RuntimeError(expr.paren, "Expected " +
                                        std::to_string(function->Arity()) +
