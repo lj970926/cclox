@@ -264,6 +264,9 @@ ExprPtr Parser::Call() {
   while (true) {
     if (Match({TokenType::LEFT_PAREN})) {
       expr = FinishCall(std::move(expr));
+    } else if (Match({TokenType::DOT})) {
+      Token name = Consume(TokenType::IDENTIFIER, "Expect property name after '.'.");
+      expr = std::make_unique<GetExpr>(std::move(expr), name);
     } else {
       break ;
     }

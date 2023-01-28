@@ -20,6 +20,8 @@ class LoxClass: public LoxCallable, public std::enable_shared_from_this<LoxClass
 
   OptionalLiteral Call(Executor& executor, const std::vector<OptionalLiteral>& arguments) override;
   size_t Arity() override;
+
+  operator std::string () { return name_; }
  private:
   std::string name_;
 };

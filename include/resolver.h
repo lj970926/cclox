@@ -46,6 +46,7 @@ class Resolver: public ExprVisitor, public StmtVisitor {
   void VisitLogic(const LogicExpr& expr) override;
   void VisitUnary(const UnaryExpr& expr) override;
   void VisitAssign(const AssignExpr& expr) override;
+  void VisitGet(const GetExpr& expr) override;
 
   void Resolve(const std::vector<StmtPtr>& stmts);
 

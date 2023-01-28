@@ -97,8 +97,7 @@ inline std::string GetLiteralStr(const OptionalLiteral& literal) {
   if (!literal.has_value())
     return "";
 
-  int index = literal.value().index();
-  if (index == 0)
+  if (IS_STRING(literal))
     return std::get<std::string>(literal.value());
   else
     return std::to_string(std::get<double>(literal.value()));

@@ -21,6 +21,7 @@ struct VariableExpr;
 struct AssignExpr;
 struct LogicExpr;
 struct CallExpr;
+struct GetExpr;
 
 class ExprVisitor {
  public:
@@ -34,6 +35,7 @@ class ExprVisitor {
   virtual void VisitAssign(const AssignExpr& assign) = 0;
   virtual void VisitLogic(const LogicExpr& logic) = 0;
   virtual void VisitCall(const CallExpr& call) = 0;
+  virtual void VisitGet(const GetExpr& get) = 0;
 };
 
 struct Expr: NonCopyable {
@@ -123,6 +125,17 @@ struct CallExpr: public Expr {
 
   void Accept(ExprVisitor& visitor) const override {
     visitor.VisitCall(*this);
+  }
+};
+
+struct GetExpr: public Expr {
+  ExprPtr object;
+  Token name;
+
+  GetExpr(ExprPtr o, Token n): object(std::move(o)), name(n) {}
+
+  void Accept(ExprVisitor& visitor) const override {
+    visitor.VisitGet(*this);
   }
 };
 

@@ -99,6 +99,10 @@ void Resolver::VisitAssign(const AssignExpr &expr) {
   ResolveLocal(expr, expr.name);
 }
 
+void Resolver::VisitGet(const GetExpr &expr) {
+  Resolve(* expr.object);
+}
+
 void Resolver::Resolve(const Stmt &stmt) {
   stmt.Accept(*this);
 }

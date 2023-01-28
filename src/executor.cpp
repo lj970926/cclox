@@ -12,6 +12,7 @@
 #include "callable.h"
 #include "return.h"
 #include "lox_class.h"
+#include "lox_instance.h"
 #include "common.h"
 
 namespace cclox {
@@ -135,10 +136,10 @@ void Executor::VisitCall(const CallExpr& expr) {
     arguments.emplace_back(EvaluateExpr(*argument));
   }
 
-  if (!IS_FUNCTION(callee))
+  if (!IS_FUNCTION(callee) && !IS_CLASS(callee))
     throw RuntimeError(expr.paren, "Can only call functions and classes.");
 
-  CallablePtr function = FUNC_VALUE(callee);
+  CallablePtr function = IS_FUNCTION(callee) ? FUNC_VALUE(callee) : CLASS_VALUE(callee);
   if (expr.arguments.size() != function->Arity()) {
     throw RuntimeError(expr.paren, "Expected " +
                                        std::to_string(function->Arity()) +
@@ -147,6 +148,16 @@ void Executor::VisitCall(const CallExpr& expr) {
   }
 
   value_ = function->Call(*this, arguments);
+}
+
+void Executor::VisitGet(const GetExpr &expr) {
+  OptionalLiteral value = EvaluateExpr(*expr.object);
+  if (IS_INSTANCE(value)) {
+    InstancePtr instance = INSTANCE_VALUE(value);
+    value_ = instance->Get(expr.name);
+  }
+
+  throw RuntimeError(expr.name, "Only instances have properties.");
 }
 
 void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
