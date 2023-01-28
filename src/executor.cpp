@@ -11,6 +11,7 @@
 #include "error.h"
 #include "callable.h"
 #include "return.h"
+#include "lox_class.h"
 #include "common.h"
 
 namespace cclox {
@@ -196,6 +197,12 @@ void Executor::VisitReturnStmt(const cclox::ReturnStmt &stmt) {
     value = EvaluateExpr(*stmt.expr);
   }
   throw Return(value);
+}
+
+void Executor::VisitClassStmt(const ClassStmt &stmt) {
+  environment_->Define(stmt.name.lexeme(), std::nullopt);
+  ClassPtr lox_class = std::make_shared<LoxClass>(stmt.name.lexeme());
+  environment_->Assign(stmt.name, lox_class);
 }
 
 void Executor::Execute(const std::vector<StmtPtr>& stmts) {

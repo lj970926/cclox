@@ -55,16 +55,27 @@ enum class TokenType {
 
 class LoxCallable;
 using CallablePtr = std::shared_ptr<LoxCallable>;
-using Literal = std::variant<std::string, double, CallablePtr>;
+
+class LoxClass;
+using ClassPtr = std::shared_ptr<LoxClass>;
+
+class LoxInstance;
+using InstancePtr = std::shared_ptr<LoxInstance>;
+
+using Literal = std::variant<std::string, double, CallablePtr, ClassPtr, InstancePtr>;
 using OptionalLiteral = std::optional<Literal>;
 
 #define DOUBLE_VALUE(literal) (std::get<double>((literal).value()))
 #define STRING_VALUE(literal) (std::get<std::string>((literal).value()))
 #define FUNC_VALUE(literal) (std::get<CallablePtr>((literal).value()))
+#define CLASS_VALUE(literal) (std::get<ClassPtr>((literal).value()))
+#define INSTANCE_VALUE(literal) (std::get<InstancePtr>((literal).value()))
 
 #define IS_DOUBLE(literal) ((literal).value().index() == 1)
 #define IS_STRING(literal) ((literal).value().index() == 0)
 #define IS_FUNCTION(literal) ((literal).value().index() == 2)
+#define IS_CLASS(literal) ((literal).value().index() == 3)
+#define IS_INSTANCE(literal) ((literal).value().index() == 4)
 #define BOOL_STRING(val) ((val) ? "true" : "false")
 
 class Token {
