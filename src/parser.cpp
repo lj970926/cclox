@@ -306,6 +306,11 @@ ExprPtr Parser::Assignment() {
       return std::make_unique<AssignExpr>(var->name, std::move(value));
     }
 
+    auto get = dynamic_cast<GetExpr*>(expr.get());
+    if (get) {
+      return std::make_unique<SetExpr>(std::move(get->object), get->name, std::move(value));
+    }
+
     Error(equal, "Invalid assignment target.");
   }
 

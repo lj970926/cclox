@@ -160,6 +160,17 @@ void Executor::VisitGet(const GetExpr &expr) {
   throw RuntimeError(expr.name, "Only instances have properties.");
 }
 
+void Executor::VisitSet(const SetExpr &expr) {
+  OptionalLiteral object = EvaluateExpr(*expr.object);
+  if (IS_INSTANCE(object)) {
+    OptionalLiteral value = EvaluateExpr(*expr.value);
+    InstancePtr instance = INSTANCE_VALUE(object);
+    instance->Set(expr.name, value);
+    value_ = value;
+  }
+  throw RuntimeError(expr.name, "Only instances have fields.");
+}
+
 void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
   EvaluateExpr(*stmt.expr);
 }
@@ -196,7 +207,10 @@ void Executor::VisitWhileStmt(const WhileStmt &stmt) {
 }
 
 void Executor::VisitFunctionStmt(const FunctionStmt &stmt) {
-  auto function_stmt = std::make_unique<FunctionStmt>(stmt.name, stmt.params, std::move(const_cast<std::vector<StmtPtr>&>(stmt.body)));
+  auto function_stmt = std::make_unique<FunctionStmt>(
+      stmt.name,
+      stmt.params,
+      std::move(const_cast<std::vector<StmtPtr>&>(stmt.body)));
 
   CallablePtr function = std::make_shared<LoxFunction>(std::move(function_stmt), environment_);
   environment_->Define(stmt.name.lexeme(), function);
@@ -212,7 +226,17 @@ void Executor::VisitReturnStmt(const cclox::ReturnStmt &stmt) {
 
 void Executor::VisitClassStmt(const ClassStmt &stmt) {
   environment_->Define(stmt.name.lexeme(), std::nullopt);
-  ClassPtr lox_class = std::make_shared<LoxClass>(stmt.name.lexeme());
+  std::unordered_map<std::string, CallablePtr> methods;
+  for (const auto& method: stmt.methods) {
+    auto func_stmt = dynamic_cast<const FunctionStmt*>(method.get());
+    auto declaration = std::make_unique<FunctionStmt>(
+        func_stmt->name,
+        func_stmt->params,
+        std::move(const_cast<FunctionStmt*>(func_stmt)->body));
+    CallablePtr function = std::make_shared<LoxFunction>(std::move(declaration), environment_);
+    methods[func_stmt->name.lexeme()] = function;
+  }
+  CallablePtr lox_class = std::make_shared<LoxClass>(stmt.name, methods);
   environment_->Assign(stmt.name, lox_class);
 }
 

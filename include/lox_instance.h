@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "token.h"
+#include "lox_class.h"
 
 namespace cclox {
 
@@ -16,6 +17,7 @@ class LoxInstance {
   LoxInstance(ClassPtr lox_class): lox_class_(lox_class) {}
   operator std::string () const { return lox_class_->name() + " instance"; }
   OptionalLiteral Get(Token name) const;
+  void Set(Token name, OptionalLiteral value);
  private:
    ClassPtr lox_class_;
    std::unordered_map<std::string, OptionalLiteral> fields_;

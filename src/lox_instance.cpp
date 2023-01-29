@@ -15,4 +15,8 @@ OptionalLiteral LoxInstance::Get(Token name) const {
   throw RuntimeError(name, "Undefined property '" + name.lexeme() + "'.");
 }
 
+void LoxInstance::Set(Token name, OptionalLiteral value) {
+  fields_[name.lexeme()] = value;
+}
+
 } //namespace cclox

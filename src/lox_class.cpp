@@ -15,4 +15,11 @@ OptionalLiteral LoxClass::Call(Executor &executor, const std::vector<OptionalLit
 size_t LoxClass::Arity() {
   return 0;
 }
+
+CallablePtr LoxClass::FindMethod(const std::string &name) const {
+  if (methods_.contains(name)) {
+    return methods_.at(name);
+  }
+  return nullptr;
+}
 }

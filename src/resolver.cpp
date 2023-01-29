@@ -57,6 +57,11 @@ void Resolver::VisitWhileStmt(const WhileStmt &stmt) {
 void Resolver::VisitClassStmt(const ClassStmt &stmt) {
   Declare(stmt.name);
   Define(stmt.name);
+
+  for (const auto& method: stmt.methods) {
+    auto func_stmt = dynamic_cast<const FunctionStmt*>(method.get());
+    ResolveFunction(*func_stmt, FunctionType::METHOD);
+  }
 }
 
 void Resolver::VisitVariable(const VariableExpr &expr) {
@@ -101,6 +106,11 @@ void Resolver::VisitAssign(const AssignExpr &expr) {
 
 void Resolver::VisitGet(const GetExpr &expr) {
   Resolve(* expr.object);
+}
+
+void Resolver::VisitSet(const SetExpr &expr) {
+  Resolve(*expr.value);
+  Resolve(*expr.object);
 }
 
 void Resolver::Resolve(const Stmt &stmt) {
