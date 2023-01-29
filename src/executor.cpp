@@ -155,6 +155,7 @@ void Executor::VisitGet(const GetExpr &expr) {
   if (IS_INSTANCE(value)) {
     InstancePtr instance = INSTANCE_VALUE(value);
     value_ = instance->Get(expr.name);
+    return ;
   }
 
   throw RuntimeError(expr.name, "Only instances have properties.");
@@ -167,6 +168,7 @@ void Executor::VisitSet(const SetExpr &expr) {
     InstancePtr instance = INSTANCE_VALUE(object);
     instance->Set(expr.name, value);
     value_ = value;
+    return ;
   }
   throw RuntimeError(expr.name, "Only instances have fields.");
 }

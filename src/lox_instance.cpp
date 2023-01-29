@@ -4,12 +4,18 @@
 #include "lox_instance.h"
 
 #include "error.h"
+#include "lox_class.h"
 
 namespace cclox {
 
 OptionalLiteral LoxInstance::Get(Token name) const {
   if (fields_.contains(name.lexeme())) {
     return fields_.at(name.lexeme());
+  }
+
+  auto method = lox_class_->FindMethod(name.lexeme());
+  if (method) {
+    return method;
   }
 
   throw RuntimeError(name, "Undefined property '" + name.lexeme() + "'.");

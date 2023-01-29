@@ -25,6 +25,8 @@ class AstPrinter: public ExprVisitor {
   void VisitAssign(const AssignExpr& assign) override;
   void VisitLogic(const LogicExpr& logic) override;
   void VisitCall(const CallExpr& call) override;
+  void VisitGet(const GetExpr& get) override;
+  void VisitSet(const SetExpr& set) override;
 
  private:
   std::string result_;
