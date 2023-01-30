@@ -24,7 +24,7 @@ class LoxFunction: public LoxCallable {
   LoxFunction(std::unique_ptr<FunctionStmt> declaration, EnvironPtr closure);
   OptionalLiteral Call(Executor& executor, const std::vector<OptionalLiteral>& arguments) override;
   size_t Arity() override;
-  CallablePtr Bind(InstancePtr instance);
+  CallablePtr Bind(InstancePtr instance, bool is_initializer);
   EnvironPtr& closure() { return closure_; }
  private:
   std::unique_ptr<FunctionStmt> declaration_;
@@ -33,12 +33,13 @@ class LoxFunction: public LoxCallable {
 
 class LoxMethod: public LoxCallable {
  public:
-  LoxMethod(CallablePtr func, InstancePtr instance);
+  LoxMethod(CallablePtr func, InstancePtr instance, bool is_initializer);
   OptionalLiteral Call(Executor& executor, const std::vector<OptionalLiteral>& arguments)  override;
   size_t Arity() override { return function_->Arity(); }
  private:
   std::shared_ptr<LoxFunction> function_;
   EnvironPtr env_;
+  bool is_initializer_;
 };
 
 } //namespace cclox

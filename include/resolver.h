@@ -19,13 +19,6 @@
 namespace cclox {
 class Resolver: public ExprVisitor, public StmtVisitor {
  public:
-
-  enum class FunctionType {
-    NONE,
-    FUNCTION,
-    METHOD
-  };
-
   Resolver(Executor& executor, ErrorReporter& reporter)
       : executor_(executor), reporter_(reporter) {};
 
@@ -54,6 +47,19 @@ class Resolver: public ExprVisitor, public StmtVisitor {
   void Resolve(const std::vector<StmtPtr>& stmts);
 
  private:
+
+  enum class FunctionType {
+    NONE,
+    FUNCTION,
+    METHOD,
+    INITIALIZER
+  };
+
+  enum class ClassType {
+    NONE,
+    CLASS
+  };
+
   void BeginScope();
   void EndScope();
   void Resolve(const Expr& expr);
@@ -75,6 +81,7 @@ class Resolver: public ExprVisitor, public StmtVisitor {
   Executor& executor_;
   ErrorReporter& reporter_;
   FunctionType current_function_ = FunctionType::NONE;
+  ClassType current_class_ = ClassType::NONE;
 };
 } //namespace cclox
 

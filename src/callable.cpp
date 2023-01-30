@@ -35,11 +35,12 @@ size_t LoxFunction::Arity() {
   return declaration_->params.size();
 }
 
-CallablePtr LoxFunction::Bind(InstancePtr instance) {
-  return std::make_shared<LoxMethod>(shared_from_this(), instance);
+CallablePtr LoxFunction::Bind(InstancePtr instance, bool is_initializer) {
+  return std::make_shared<LoxMethod>(shared_from_this(), instance, is_initializer);
 }
 
-LoxMethod::LoxMethod(CallablePtr callable, InstancePtr instance) {
+LoxMethod::LoxMethod(CallablePtr callable, InstancePtr instance,
+                     bool is_initializer): is_initializer_(is_initializer) {
   auto func = std::dynamic_pointer_cast<LoxFunction>(callable);
   if (func) {
     function_ = func;
@@ -51,7 +52,8 @@ LoxMethod::LoxMethod(CallablePtr callable, InstancePtr instance) {
 OptionalLiteral LoxMethod::Call(Executor &executor, const std::vector<OptionalLiteral> &arguments) {
   VariableRestorer restorer(function_->closure());
   function_->closure() = env_;
-  return function_->Call(executor, arguments);
+  auto res = function_->Call(executor, arguments);
+  return is_initializer_ ? env_->GetAt(0, "this") : res;
 }
 
 } //namespace cclox

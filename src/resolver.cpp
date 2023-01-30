@@ -4,6 +4,8 @@
 
 #include "resolver.h"
 
+#include "common.h"
+
 namespace cclox {
 void Resolver::VisitBlockStmt(const BlockStmt &stmt) {
   BeginScope();
@@ -45,6 +47,9 @@ void Resolver::VisitReturnStmt(const ReturnStmt &stmt) {
     reporter_.set_error(stmt.keyword, "Can't return from top-level code.");
   }
   if (stmt.expr) {
+    if (current_function_ == FunctionType::INITIALIZER) {
+      reporter_.set_error(stmt.keyword, "Can't return a value from an initializer.");
+    }
     Resolve(*stmt.expr);
   }
 }
@@ -55,6 +60,8 @@ void Resolver::VisitWhileStmt(const WhileStmt &stmt) {
 }
 
 void Resolver::VisitClassStmt(const ClassStmt &stmt) {
+  VariableRestorer restorer(current_class_);
+  current_class_ = ClassType::CLASS;
   Declare(stmt.name);
   Define(stmt.name);
 
@@ -63,7 +70,11 @@ void Resolver::VisitClassStmt(const ClassStmt &stmt) {
 
   for (const auto& method: stmt.methods) {
     auto func_stmt = dynamic_cast<const FunctionStmt*>(method.get());
-    ResolveFunction(*func_stmt, FunctionType::METHOD);
+    FunctionType decl = FunctionType::METHOD;
+    if (func_stmt->name.lexeme() == "init") {
+      decl = FunctionType::INITIALIZER;
+    }
+    ResolveFunction(*func_stmt, decl);
   }
   EndScope();
 }
@@ -118,6 +129,10 @@ void Resolver::VisitSet(const SetExpr &expr) {
 }
 
 void Resolver::VisitThis(const ThisExpr &expr) {
+  if (current_class_ == ClassType::NONE) {
+    reporter_.set_error(expr.keyword, "Can't use 'this' outside of a class.");
+    return ;
+  }
   ResolveLocal(expr, expr.keyword);
 }
 
