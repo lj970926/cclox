@@ -291,6 +291,10 @@ ExprPtr Parser::Primary() {
     Consume(TokenType::RIGHT_PAREN, "Expect ')' after expression.");
     return std::make_unique<GroupingExpr>(std::move(expr));
   }
+
+  if (Match({TokenType::THIS}))
+    return std::make_unique<ThisExpr>(Previous());
+
   throw Error(Peek(), "Expect expression.");
 }
 

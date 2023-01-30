@@ -8,6 +8,7 @@
 
 #include "environment.h"
 #include "return.h"
+#include "common.h"
 
 namespace cclox {
 LoxFunction::LoxFunction(std::unique_ptr<FunctionStmt> declaration,
@@ -33,4 +34,24 @@ OptionalLiteral LoxFunction::Call(Executor &executor, const std::vector<Optional
 size_t LoxFunction::Arity() {
   return declaration_->params.size();
 }
+
+CallablePtr LoxFunction::Bind(InstancePtr instance) {
+  return std::make_shared<LoxMethod>(shared_from_this(), instance);
+}
+
+LoxMethod::LoxMethod(CallablePtr callable, InstancePtr instance) {
+  auto func = std::dynamic_pointer_cast<LoxFunction>(callable);
+  if (func) {
+    function_ = func;
+    env_ = std::make_shared<Environment>(func->closure());
+    env_->Define("this", instance);
+  }
+}
+
+OptionalLiteral LoxMethod::Call(Executor &executor, const std::vector<OptionalLiteral> &arguments) {
+  VariableRestorer restorer(function_->closure());
+  function_->closure() = env_;
+  return function_->Call(executor, arguments);
+}
+
 } //namespace cclox

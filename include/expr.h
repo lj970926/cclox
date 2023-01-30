@@ -23,6 +23,7 @@ struct LogicExpr;
 struct CallExpr;
 struct GetExpr;
 struct SetExpr;
+struct ThisExpr;
 
 class ExprVisitor {
  public:
@@ -38,6 +39,7 @@ class ExprVisitor {
   virtual void VisitCall(const CallExpr& call) = 0;
   virtual void VisitGet(const GetExpr& get) = 0;
   virtual void VisitSet(const SetExpr& set) = 0;
+  virtual void VisitThis(const ThisExpr& expr) = 0;
 };
 
 struct Expr: NonCopyable {
@@ -151,6 +153,16 @@ struct SetExpr: public Expr {
 
   void Accept(ExprVisitor& visitor) const override {
     visitor.VisitSet(*this);
+  }
+};
+
+struct ThisExpr: public Expr {
+  Token keyword;
+
+  ThisExpr(Token k): keyword(k) {}
+
+  void Accept(ExprVisitor& visitor) const override {
+    visitor.VisitThis(*this);
   }
 };
 
