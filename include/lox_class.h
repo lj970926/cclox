@@ -14,7 +14,7 @@
 #include "token.h"
 
 namespace cclox {
-class LoxClass: public LoxCallable, public std::enable_shared_from_this<LoxClass>{
+class LoxClass: public LoxCallable{
  public:
   LoxClass(const std::string& name, const std::unordered_map<std::string, CallablePtr>& methods)
       : name_(name), methods_(methods) {}

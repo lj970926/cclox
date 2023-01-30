@@ -173,6 +173,10 @@ void Executor::VisitSet(const SetExpr &expr) {
   throw RuntimeError(expr.name, "Only instances have fields.");
 }
 
+void Executor::VisitThis(const ThisExpr &expr) {
+  value_ = LookUpVariable(expr.keyword, expr);
+}
+
 void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
   EvaluateExpr(*stmt.expr);
 }

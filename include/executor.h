@@ -29,6 +29,7 @@ class Executor: public ExprVisitor, public StmtVisitor{
   void VisitCall(const CallExpr& expr) override;
   void VisitGet(const GetExpr& expr) override;
   void VisitSet(const SetExpr& expr) override;
+  void VisitThis(const ThisExpr& expr) override;
 
   void VisitExpressionStmt(const ExpressionStmt& stmt) override;
   void VisitPrintStmt(const PrintStmt& stmt) override;

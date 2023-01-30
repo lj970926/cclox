@@ -6,13 +6,14 @@
 #define CCLOX_LOX_INSTANCE_H
 #include <string>
 #include <unordered_map>
+#include <memory>
 
 #include "token.h"
 #include "lox_class.h"
 
 namespace cclox {
 
-class LoxInstance {
+class LoxInstance: public std::enable_shared_from_this<LoxInstance> {
  public:
   LoxInstance(ClassPtr lox_class): lox_class_(lox_class) {}
   operator std::string () const { return lox_class_->name() + " instance"; }

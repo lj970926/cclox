@@ -15,7 +15,8 @@ OptionalLiteral LoxInstance::Get(Token name) const {
 
   auto method = lox_class_->FindMethod(name.lexeme());
   if (method) {
-    return method;
+    auto func = std::dynamic_pointer_cast<LoxFunction>(method);
+    return func->Bind(std::const_pointer_cast<LoxInstance>(shared_from_this()));
   }
 
   throw RuntimeError(name, "Undefined property '" + name.lexeme() + "'.");

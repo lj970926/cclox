@@ -47,6 +47,10 @@ void AstPrinter::VisitSet(const SetExpr &set) {
 
 }
 
+void AstPrinter::VisitThis(const ThisExpr &expr) {
+
+}
+
 void AstPrinter::Parenthesize(const std::string &name, const std::initializer_list<const Expr *> &exprs) {
   result_ = result_ + "(" + name;
   for (const Expr* expr: exprs) {

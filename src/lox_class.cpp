@@ -8,7 +8,7 @@
 
 namespace cclox {
 OptionalLiteral LoxClass::Call(Executor &executor, const std::vector<OptionalLiteral> &arguments) {
-  InstancePtr instance = std::make_shared<LoxInstance>(shared_from_this());
+  InstancePtr instance = std::make_shared<LoxInstance>(std::dynamic_pointer_cast<LoxClass>(shared_from_this()));
   return  instance;
 }
 
