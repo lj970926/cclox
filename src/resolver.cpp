@@ -71,6 +71,8 @@ void Resolver::VisitClassStmt(const ClassStmt &stmt) {
       reporter_.set_error(superclass->name, "A class can't inherit from itself.");
     }
     Resolve(*stmt.superclass);
+    BeginScope();
+    scopes_.back()["super"] = true;
   }
 
   BeginScope();
@@ -85,6 +87,10 @@ void Resolver::VisitClassStmt(const ClassStmt &stmt) {
     ResolveFunction(*func_stmt, decl);
   }
   EndScope();
+
+  if (stmt.superclass) {
+    EndScope();
+  }
 }
 
 void Resolver::VisitVariable(const VariableExpr &expr) {
@@ -141,6 +147,10 @@ void Resolver::VisitThis(const ThisExpr &expr) {
     reporter_.set_error(expr.keyword, "Can't use 'this' outside of a class.");
     return ;
   }
+  ResolveLocal(expr, expr.keyword);
+}
+
+void Resolver::VisitSuper(const SuperExpr &expr) {
   ResolveLocal(expr, expr.keyword);
 }
 

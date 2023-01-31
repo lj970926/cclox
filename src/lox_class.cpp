@@ -25,6 +25,9 @@ CallablePtr LoxClass::FindMethod(const std::string &name) const {
   if (methods_.contains(name)) {
     return methods_.at(name);
   }
+  if (superclass_) {
+    return superclass_->FindMethod(name);
+  }
   return nullptr;
 }
 }

@@ -242,6 +242,12 @@ void Executor::VisitClassStmt(const ClassStmt &stmt) {
     }
   }
   environment_->Define(stmt.name.lexeme(), std::nullopt);
+  VariableRestorer restorer(environment_);
+  if (stmt.superclass) {
+    environment_ = std::make_shared<Environment>(environment_);
+    environment_->Define("super", superclass);
+  }
+
   std::unordered_map<std::string, CallablePtr> methods;
   for (const auto& method: stmt.methods) {
     auto func_stmt = dynamic_cast<const FunctionStmt*>(method.get());
@@ -252,9 +258,15 @@ void Executor::VisitClassStmt(const ClassStmt &stmt) {
     CallablePtr function = std::make_shared<LoxFunction>(std::move(declaration), environment_);
     methods[func_stmt->name.lexeme()] = function;
   }
-  CallablePtr lox_class = std::make_shared<LoxClass>(stmt.name,
-                                                     std::dynamic_pointer_cast<LoxClass>(CALLABLE_VALUE(superclass)),
-                                                         methods);
+  CallablePtr lox_class;
+  if (superclass) {
+    lox_class = std::make_shared<LoxClass>(stmt.name,
+                                           std::dynamic_pointer_cast<LoxClass>(CALLABLE_VALUE(superclass)),
+                                               methods);
+  } else {
+    lox_class = std::make_shared<LoxClass>(stmt.name, nullptr, methods);
+  }
+
   environment_->Assign(stmt.name, lox_class);
 }
 

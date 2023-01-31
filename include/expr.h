@@ -24,6 +24,7 @@ struct CallExpr;
 struct GetExpr;
 struct SetExpr;
 struct ThisExpr;
+struct SuperExpr;
 
 class ExprVisitor {
  public:
@@ -40,6 +41,7 @@ class ExprVisitor {
   virtual void VisitGet(const GetExpr& get) = 0;
   virtual void VisitSet(const SetExpr& set) = 0;
   virtual void VisitThis(const ThisExpr& expr) = 0;
+  virtual void VisitSuper(const SuperExpr& expr) = 0;
 };
 
 struct Expr: NonCopyable {
@@ -163,6 +165,17 @@ struct ThisExpr: public Expr {
 
   void Accept(ExprVisitor& visitor) const override {
     visitor.VisitThis(*this);
+  }
+};
+
+struct SuperExpr: public Expr {
+  Token keyword;
+  Token method;
+
+  SuperExpr(Token k, Token m): keyword(k), method(m) {}
+
+  void Accept(ExprVisitor& visitor) const override {
+    visitor.VisitSuper(*this);
   }
 };
 

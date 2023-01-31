@@ -302,6 +302,13 @@ ExprPtr Parser::Primary() {
   if (Match({TokenType::THIS}))
     return std::make_unique<ThisExpr>(Previous());
 
+  if (Match({TokenType::SUPER})) {
+    Token keyword = Previous();
+    Consume(TokenType::DOT, "Expect '.' after super.");
+    Token method = Consume(TokenType::IDENTIFIER, "Expect superclass method name.");
+    return std::make_unique<SuperExpr>(keyword, method);
+  }
+
   throw Error(Peek(), "Expect expression.");
 }
 
