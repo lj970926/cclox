@@ -126,10 +126,11 @@ struct ReturnStmt: public Stmt {
 
 struct ClassStmt: public Stmt {
   Token name;
+  ExprPtr superclass;
   std::vector<StmtPtr> methods;
 
-  ClassStmt(Token n, std::vector<StmtPtr>&& m)
-      : name(n), methods(std::move(m)) {}
+  ClassStmt(Token n, ExprPtr s, std::vector<StmtPtr>&& m)
+      : name(n), superclass(std::move(s)), methods(std::move(m)) {}
 
   void Accept(StmtVisitor& visitor) const override {
     visitor.VisitClassStmt(*this);

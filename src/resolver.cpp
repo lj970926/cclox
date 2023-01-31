@@ -65,6 +65,14 @@ void Resolver::VisitClassStmt(const ClassStmt &stmt) {
   Declare(stmt.name);
   Define(stmt.name);
 
+  if (stmt.superclass) {
+    auto superclass = dynamic_cast<const VariableExpr*>(stmt.superclass.get());
+    if (superclass->name.lexeme() == stmt.name.lexeme()) {
+      reporter_.set_error(superclass->name, "A class can't inherit from itself.");
+    }
+    Resolve(*stmt.superclass);
+  }
+
   BeginScope();
   scopes_.back()["this"] = true;
 

@@ -231,6 +231,16 @@ void Executor::VisitReturnStmt(const cclox::ReturnStmt &stmt) {
 }
 
 void Executor::VisitClassStmt(const ClassStmt &stmt) {
+  OptionalLiteral superclass = std::nullopt;
+  if (stmt.superclass) {
+    superclass = EvaluateExpr(*stmt.superclass);
+    if (!IS_CALLABLE(superclass) ||
+        std::dynamic_pointer_cast<LoxClass>(CALLABLE_VALUE(superclass)) == nullptr) {
+      throw RuntimeError(
+          dynamic_cast<const VariableExpr*>(stmt.superclass.get())->name,
+          "Superclass must be a class");
+    }
+  }
   environment_->Define(stmt.name.lexeme(), std::nullopt);
   std::unordered_map<std::string, CallablePtr> methods;
   for (const auto& method: stmt.methods) {
@@ -242,7 +252,9 @@ void Executor::VisitClassStmt(const ClassStmt &stmt) {
     CallablePtr function = std::make_shared<LoxFunction>(std::move(declaration), environment_);
     methods[func_stmt->name.lexeme()] = function;
   }
-  CallablePtr lox_class = std::make_shared<LoxClass>(stmt.name, methods);
+  CallablePtr lox_class = std::make_shared<LoxClass>(stmt.name,
+                                                     std::dynamic_pointer_cast<LoxClass>(CALLABLE_VALUE(superclass)),
+                                                         methods);
   environment_->Assign(stmt.name, lox_class);
 }
 

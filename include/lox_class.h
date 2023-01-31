@@ -16,8 +16,9 @@
 namespace cclox {
 class LoxClass: public LoxCallable{
  public:
-  LoxClass(const std::string& name, const std::unordered_map<std::string, CallablePtr>& methods)
-      : name_(name), methods_(methods) {}
+  LoxClass(const std::string& name, std::shared_ptr<LoxClass> superclass,
+           const std::unordered_map<std::string, CallablePtr>& methods)
+      : name_(name), superclass_(superclass), methods_(methods) {}
 
   std::string name() const {return name_;}
 
@@ -29,6 +30,7 @@ class LoxClass: public LoxCallable{
   operator std::string () { return name_; }
  private:
   std::string name_;
+  std::shared_ptr<LoxClass> superclass_;
   std::unordered_map<std::string, CallablePtr> methods_;
 };
 }
