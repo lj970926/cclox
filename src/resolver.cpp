@@ -66,6 +66,7 @@ void Resolver::VisitClassStmt(const ClassStmt &stmt) {
   Define(stmt.name);
 
   if (stmt.superclass) {
+    current_class_ = ClassType::SUBCLASS;
     auto superclass = dynamic_cast<const VariableExpr*>(stmt.superclass.get());
     if (superclass->name.lexeme() == stmt.name.lexeme()) {
       reporter_.set_error(superclass->name, "A class can't inherit from itself.");
@@ -151,6 +152,11 @@ void Resolver::VisitThis(const ThisExpr &expr) {
 }
 
 void Resolver::VisitSuper(const SuperExpr &expr) {
+  if (current_class_ == ClassType::NONE) {
+    reporter_.set_error(expr.keyword, "Can't use 'super' outside of a class.");
+  } else if (current_class_ != ClassType::SUBCLASS) {
+    reporter_.set_error(expr.keyword, "Can't use 'super' in a class with no superclass.");
+  }
   ResolveLocal(expr, expr.keyword);
 }
 

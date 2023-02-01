@@ -58,7 +58,8 @@ class Resolver: public ExprVisitor, public StmtVisitor {
 
   enum class ClassType {
     NONE,
-    CLASS
+    CLASS,
+    SUBCLASS
   };
 
   void BeginScope();

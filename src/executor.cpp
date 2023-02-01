@@ -177,6 +177,21 @@ void Executor::VisitThis(const ThisExpr &expr) {
   value_ = LookUpVariable(expr.keyword, expr);
 }
 
+void Executor::VisitSuper(const SuperExpr &expr) {
+  size_t distance = locals_.at(&expr);
+  auto superclass = std::dynamic_pointer_cast<LoxClass>(
+      CALLABLE_VALUE(environment_->GetAt(distance, "super"))
+      );
+  InstancePtr instance = INSTANCE_VALUE(environment_->GetAt(distance - 1, "this"));
+  auto method = std::dynamic_pointer_cast<LoxFunction>(
+      superclass->FindMethod(expr.method.lexeme())
+      );
+  if (!method) {
+    throw RuntimeError(expr.method, "Undefined property '" + expr.method.lexeme() + "'.");
+  }
+  value_ = method->Bind(instance, expr.method.lexeme() == "init");
+}
+
 void Executor::VisitExpressionStmt(const ExpressionStmt &stmt) {
   EvaluateExpr(*stmt.expr);
 }
